@@ -2,13 +2,40 @@ import type { RouteObject } from "react-router-dom"; // `type` only import
 import Index from "./pages/IndexPage";
 import Login from "./pages/LoginRegister";
 import Home from "./pages/Home";
+import {PublicOnlyRoute,AuthRedirect} from "./protectRoute"
+import Content from "./pages/Content";
+import Detail from "./pages/Detail";
+
 
 export const routes: RouteObject[] = [
   { path: "/", element: <Index />,
     children:[
-      {index:true,element:<Home/>}
+      {index:true,element:(
+        <AuthRedirect>
+          <Home/>
+        </AuthRedirect>
+      )},
+      {path:'/movie',element:(
+        <AuthRedirect>
+          <Content content="movie"/>
+        </AuthRedirect>
+      )},
+      {path:'/serie',element:(
+        <AuthRedirect>
+          <Content content="tv"/>
+        </AuthRedirect>
+      )},
     ]
 
    }, 
-  {path:"/login",element: <Login/>}
+  {path:"/login",element: (
+    <PublicOnlyRoute>
+      <Login/>
+    </PublicOnlyRoute>
+  )},
+   {path:'/detail/:id',element:(
+        <AuthRedirect>
+          <Detail/>
+        </AuthRedirect>
+      )},
 ];

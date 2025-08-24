@@ -1,10 +1,22 @@
 @import "tailwindcss";
 
 :root{
-  --primary-bg:#29304a;
-  --secondary-bg:#171921;
+  --primary-bg:#202331;
+  --secondary-bg:#0f1116;
   --text:#c7c7c7;
   --text-highlight:#ffffff;
-  --primary:#c9b532;
+  --primary:#d8c026;
   
+}
+
+/* globals.css or tailwind.css */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }

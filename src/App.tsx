@@ -1,7 +1,7 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import { routes } from './route';
-
+import { useAuthStore } from './store/user';
 
 function AppRoutes() {
  return useRoutes(routes);
@@ -9,6 +9,23 @@ function AppRoutes() {
 
 
 function App() {
+  const {fetchMe,isChecking} = useAuthStore()
+
+  useEffect(() => {
+    fetchMe()
+  },[fetchMe])
+
+
+  if(isChecking){
+    return (
+      <>
+      <div className='w-full h-[100vh] bg-[var(--primary-bg)]'>
+        my loading
+      </div>
+      </>
+    )
+  }
+
   return (
     <>
       

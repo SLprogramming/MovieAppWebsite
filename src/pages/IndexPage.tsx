@@ -5,12 +5,12 @@ import { Outlet } from 'react-router-dom'
 const Home = () => {
   return (
     <>
-    <div className='w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex'>
-        <div className='w-[10%]'>
+    <div className='w-full h-[100vh]  bg-[var(--primary-bg)] text-[var(--text)] flex'>
+        <div className='w-[170px]'>
 
       <SideNav/>
         </div>
-      <div className='w-[89%] p-2 overflow-y-scroll'>
+      <div className='flex-1 p-2 overflow-y-scroll '>
         <Outlet></Outlet>
       </div>
     </div>

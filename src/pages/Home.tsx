@@ -1,71 +1,70 @@
-import React, { useEffect, useState } from 'react'
-import api from '../axios'
-
-export interface Movie {
-  adult: boolean;
-  backdrop_path: string;
-  id: number;
-  title: string;
-  original_title: string;
-  overview: string;
-  poster_path: string;
-  media_type: string;
-  original_language: string;
-  genre_ids: number[];
-  popularity: number;
-  release_date: string; // ISO date string
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
-}
-
-
-
+import React, { useEffect, useState } from "react";
+import api from "../axios";
+import { useContentStore } from "../store/content";
+import MovieCard from "../components/MovieCard";
+import { h1 } from "framer-motion/client";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const [movies,setMovies] = useState<Movie[]>([])
+  const contentStore = useContentStore();
+  const navigate = useNavigate()
+  const { movie, tv } = contentStore;
 
-  const fetchMovies = async () => {
-  try {
-    let res  = await api.get('content/get-all/1')
-    console.log(res.data)
-    if(res.data.success){
-      setMovies(res.data.data)
-    }
-    return res.data.data
-  } catch (error) {
-    
-  }
-}
   useEffect(() => {
-    fetchMovies()
-   
-  },[])
+    if(movie.data.length == 0){
+
+      contentStore.fetchContent("movie");
+    }
+    if(tv.data.length == 0) {
+
+      contentStore.fetchContent("tv");
+    }
+  }, []);
+
+
   return (
-    <div className='flex flex-wrap gap-5'>
-{movies.map((e) => (
-  <div
-    key={e.id}
-    className="group w-[200px] bg-[var(--secondary-bg)] rounded-[10px] overflow-hidden shadow-sm transform transition-transform duration-200 shadow-[white] cursor-pointer hover:scale-105"
-  >
-    <div className="overflow-hidden">
-      <img
-        src={`https://image.tmdb.org/t/p/w500${e.poster_path}`}
-        alt=""
-        className="w-full transform transition-transform duration-300 group-hover:scale-110"
-      />
+  
+   <>
+   <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">Movies</h1>
+    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
+      {movie.data.slice(0,10).map((e,index) => (
+     
+          <MovieCard
+          key={index}
+            date={e.release_date}
+            id={e.id}
+            poster={e.poster_path}
+            title={e.title}
+            content="movie"
+          ></MovieCard>
+        
+      ))}
+      <div onClick={() => navigate('/movie')} className="w-[200px] shrink-0 bg-[var(--secondary-bg)] pb-4 rounded-[10px] overflow-hidden shadow-sm transform transition-transform duration-200 hover:scale-105 shadow-[white] cursor-pointer flex items-center justify-center">
+      see more
+      </div>
     </div>
-    <h1 className="truncate w-full px-2 pt-2 text-[1.2rem] text-[var(--text-highlight)]">
-      {e.original_title}
-    </h1>
-    <h1 className="px-2 pb-2">{e.release_date.split("-")[0]}</h1>
-  </div>
-))}
-
-
+   <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">TV</h1>
+    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
+      {tv.data.map((e,index) => (
+     
+          <MovieCard
+          key={index}
+            date={e.first_air_date}
+            id={e.id}
+            poster={e.poster_path}
+            title={e.name}
+            content="tv"
+          ></MovieCard>
+        
+      ))}
+      <div onClick={() => navigate('/serie')} className="w-[200px] shrink-0 bg-[var(--secondary-bg)] pb-4 rounded-[10px] overflow-hidden shadow-sm transform transition-transform duration-200 hover:scale-105 shadow-[white] cursor-pointer flex items-center justify-center">
+      see more
+      </div>
+    </div>
+  
    
-    </div>
-  )
-}
+   </>
+  );
+};
 
-export default Index
+export default Index;
