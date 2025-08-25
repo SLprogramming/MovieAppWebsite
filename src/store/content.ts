@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import api from "../axios";
-import type { MovieDetail, TVDetail } from "../types/content";
+import type { TVSimilar,MovieSimilar, MovieDetail, TVDetail } from "../types/content";
+import { data } from "react-router-dom";
 
 export interface MovieContentType {
   adult: boolean;
@@ -40,44 +41,70 @@ export interface TVContentType {
 
 type ContentType = "movie" | "tv";
 
-
-
 interface ContentState {
-    movieDetail:MovieDetail ,
-    tvDetail:TVDetail ,
+  // castMembers: CastMember[];
+  isLoading: boolean;
+  movieDetail: MovieDetail;
+  tvDetail: TVDetail;
   movie: {
     page: number;
     data: MovieContentType[];
+    similar:MovieSimilar[];
   };
   tv: {
     page: number;
     data: TVContentType[];
+    similar:TVSimilar[];
   };
   fetchContent: (contentType: ContentType) => Promise<void>;
-  fetchContentDetail: (contentType: ContentType,id:string) => Promise<void>;
+  fetchContentDetail: (contentType: ContentType, id: string) => Promise<void>;
 }
 
-
-
 export const useContentStore = create<ContentState>((set, get) => ({
-    movieDetail:{} as MovieDetail,
-    tvDetail:{} as TVDetail,
+  // castMembers: [],
+  isLoading: true,
+  movieDetail: {} as MovieDetail,
+  tvDetail: {} as TVDetail,
   movie: {
     page: 1,
     data: [],
+    similar:[]
   },
   tv: {
     page: 1,
     data: [],
+    similar:[]
   },
   fetchContent: async (contentType = "movie") => {
     let state = get();
     try {
+      if (state[contentType].page == 1) {
+        set({ isLoading: true });
+      } else {
+        set({
+          [contentType]: {
+            page: state[contentType].page,
+            data: [
+              ...state[contentType].data,
+              ...Array.from({ length: 10 }, () => ({})),
+            ],
+          },
+        });
+      }
       let res = await api.get(
         `content/get-all/${state[contentType].page}?content=${contentType}`
       );
+      set({
+        [contentType]: {
+          page: state[contentType].page,
+          data: [
+            ...state[contentType].data.filter(
+              (e) => Object.keys(e).length !== 0
+            ),
+          ],
+        },
+      });
       if (res.data.success) {
-     
         set({
           [contentType]: {
             page: state[contentType].page + 1,
@@ -85,18 +112,41 @@ export const useContentStore = create<ContentState>((set, get) => ({
           },
         });
       }
-    } catch (error) {}
-  },
-  fetchContentDetail: async (contentType,id) => {
-    try {
-        let res = await api.get(`content/get-detail/${id}?content=${contentType}`)
-        if(res.data.success){
-
-            set({[`${contentType}Detail`]:res.data.data})
-        }
     } catch (error) {
-        
+      set({ isLoading: false });
+    } finally {
+      set({ isLoading: false });
     }
-  }
+  },
+  fetchContentDetail: async (contentType, id) => {
+    let state = get()
+    try {
+      set({ isLoading: true });
+      let res = await api.get(
+        `content/get-detail/${id}?content=${contentType}`
+      );
+      // let castRes = await api.get(
+      //   `content/get-cast/${id}?content=${contentType}`
+      // );
+      // if (castRes.data.success) {
+      //   set({ castMembers: castRes.data.data });
+      // }
+      let similarRes = await api.get(
+        `content/get-similar/${id}?content=${contentType}`
+      );
+      if(similarRes.data.success){
+        console.log(similarRes.data.data)
+        set({[contentType]:{page:state[contentType].page,data:state[contentType].data,similar:similarRes.data.data.slice(0,10)}})
+      }
+      
+      if (res.data.success) {
+        set({ [`${contentType}Detail`]: res.data.data });
+      }
+    } catch (error) {
+      set({ isLoading: false });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
   //   setToken: (token) => set({ accessToken: token }),
 }));

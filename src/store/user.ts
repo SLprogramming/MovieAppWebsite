@@ -32,7 +32,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   accessToken: null,
-  isChecking: false,
+  isChecking: true,
 
   setToken: (token) => set({ accessToken: token }),
 

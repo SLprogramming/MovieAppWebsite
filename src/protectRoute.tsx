@@ -13,7 +13,7 @@ type RouteProps = {
 
 export const AuthRedirect = ({ children } : RouteProps) => {
      const authStore = useAuthStore()
-   if(!authStore.user){
+   if(!authStore.user && !authStore.isChecking){
      return <Navigate to={"/login"} replace />
    }
   return <>{children}</>;
@@ -21,7 +21,7 @@ export const AuthRedirect = ({ children } : RouteProps) => {
 
 export const PublicOnlyRoute = ({ children }:RouteProps) => {
      const authStore = useAuthStore()
-     if(authStore.user){
+     if(authStore.user && !authStore.isChecking){
      return <Navigate to={"/"} replace />
    }
    return <>{children}</>;

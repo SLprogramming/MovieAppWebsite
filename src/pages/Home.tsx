@@ -4,6 +4,7 @@ import { useContentStore } from "../store/content";
 import MovieCard from "../components/MovieCard";
 import { h1 } from "framer-motion/client";
 import { useNavigate } from "react-router-dom";
+import IndexSkeleton from "../components/IndexSkeleton";
 
 const Index = () => {
   const contentStore = useContentStore();
@@ -11,7 +12,7 @@ const Index = () => {
   const { movie, tv } = contentStore;
 
   useEffect(() => {
-    if(movie.data.length == 0){
+    if(movie.data?.length == 0){
 
       contentStore.fetchContent("movie");
     }
@@ -21,13 +22,15 @@ const Index = () => {
     }
   }, []);
 
-
+  if(contentStore.isLoading){
+    return (<IndexSkeleton titles={['Movies','Tv']}/>)
+  }
   return (
   
    <>
    <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">Movies</h1>
     <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
-      {movie.data.slice(0,10).map((e,index) => (
+      {movie.data?.slice(0,10).map((e,index) => (
      
           <MovieCard
           key={index}
@@ -45,7 +48,7 @@ const Index = () => {
     </div>
    <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">TV</h1>
     <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
-      {tv.data.map((e,index) => (
+      {tv?.data?.slice(0,10).map((e,index) => (
      
           <MovieCard
           key={index}
@@ -61,6 +64,7 @@ const Index = () => {
       see more
       </div>
     </div>
+    
   
    
    </>

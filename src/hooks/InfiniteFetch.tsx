@@ -7,28 +7,35 @@ type UseInfiniteFetchProps = {
 
 export const useInfiniteFetch = ({ dataLength, fetchMore }: UseInfiniteFetchProps) => {
   const lastElementRef = useRef<HTMLDivElement | null>(null);
-  const [loading, setLoading] = useState(false);
+  const loadingRef = useRef(false); // track loading without triggering rerender
 
   useEffect(() => {
-    if (!lastElementRef.current) return;
+    const current = lastElementRef.current;
+    if (!current) return;
 
     const observer = new IntersectionObserver(
-      async (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          setLoading(true);
-          await fetchMore();
-          setLoading(false);
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !loadingRef.current) {
+          loadingRef.current = true;
+          Promise.resolve(fetchMore()).finally(() => {
+            loadingRef.current = false;
+          });
         }
       },
-      { threshold: 1.0 }
+      {
+        root: null, // viewport
+        rootMargin: "0px",
+        threshold: 0.8, // trigger when 50% of last item is visible
+      }
     );
 
-    observer.observe(lastElementRef.current);
+    observer.observe(current);
 
     return () => {
-      if (lastElementRef.current) observer.unobserve(lastElementRef.current);
+      observer.unobserve(current);
     };
-  }, [dataLength, fetchMore, loading]);
+  }, [dataLength, fetchMore]); // no loading in dependencies
 
   return lastElementRef;
 };

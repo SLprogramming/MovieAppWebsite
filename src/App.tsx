@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     fetchMe()
-  },[fetchMe])
+  },[])
 
 
   if(isChecking){

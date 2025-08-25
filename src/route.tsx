@@ -17,12 +17,12 @@ export const routes: RouteObject[] = [
       )},
       {path:'/movie',element:(
         <AuthRedirect>
-          <Content content="movie"/>
+          <Content key={'movie'} content="movie"/>
         </AuthRedirect>
       )},
       {path:'/serie',element:(
         <AuthRedirect>
-          <Content content="tv"/>
+          <Content key={'tv'} content="tv"/>
         </AuthRedirect>
       )},
     ]
