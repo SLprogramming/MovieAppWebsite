@@ -2,9 +2,10 @@ import type { RouteObject } from "react-router-dom"; // `type` only import
 import Index from "./pages/IndexPage";
 import Login from "./pages/LoginRegister";
 import Home from "./pages/Home";
-import {PublicOnlyRoute,AuthRedirect} from "./protectRoute"
+import {PublicOnlyRoute,AuthRedirect, ActivateRoute} from "./protectRoute"
 import Content from "./pages/Content";
 import Detail from "./pages/Detail";
+import Activate from "./pages/Activate";
 
 
 export const routes: RouteObject[] = [
@@ -32,6 +33,11 @@ export const routes: RouteObject[] = [
     <PublicOnlyRoute>
       <Login/>
     </PublicOnlyRoute>
+  )},
+  {path:"/activate",element: (
+    <ActivateRoute>
+      <Activate/>
+    </ActivateRoute>
   )},
    {path:'/detail/:id',element:(
         <AuthRedirect>

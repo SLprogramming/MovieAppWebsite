@@ -36,6 +36,11 @@ const Login = () => {
     if(!loginFormInput.email.trim() || !loginFormInput.password.trim()) return
     authStore.login(loginFormInput)
   }
+  const handleRegister = () => {
+    console.log('hello')
+    if(!registerFormInput.email.trim() || !registerFormInput.name.trim() || !registerFormInput.password.trim() ) return
+    authStore.register(registerFormInput)
+  }
 
   return (
     <div className="bg-[var(--primary-bg)] w-full h-[100vh] text-[var(--text)] flex justify-center items-start">
@@ -184,7 +189,7 @@ const Login = () => {
               </div>
 
               {/* Submit */}
-              <button className="w-full bg-[var(--text-highlight)] text-[var(--primary-bg)] font-semibold py-2 rounded-lg hover:opacity-90 active:scale-[0.98] transition">
+              <button onClick={handleRegister} className="w-full bg-[var(--text-highlight)] text-[var(--primary-bg)] font-semibold py-2 rounded-lg hover:opacity-90 active:scale-[0.98] transition">
                 Register
               </button>
             </motion.div>

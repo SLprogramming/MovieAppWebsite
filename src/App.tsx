@@ -9,10 +9,11 @@ function AppRoutes() {
 
 
 function App() {
-  const {fetchMe,isChecking} = useAuthStore()
+  const {fetchMe,isChecking,ActivationTimer} = useAuthStore()
 
   useEffect(() => {
     fetchMe()
+    ActivationTimer()
   },[])
 
 
