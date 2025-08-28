@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import api from "../axios";
 import type { LoginFormInputType, RegisterFormInputType } from "../pages/LoginRegister";
+import { toast } from "react-toastify";
+import type { Dispatch, SetStateAction } from "react";
 
 export interface User {
   _id: string;
@@ -30,7 +32,7 @@ interface AuthState {
   setToken: (token: string | null) => void;
   fetchMe: () => Promise<void>;
   ActivationTimer:() => void;
-  activateAccount:({activation_token,activation_code} : {activation_token:string,activation_code:string}) => Promise<void>
+  activateAccount:({activation_token,activation_code} : {activation_token:string,activation_code:string} , setSuccess :Dispatch<SetStateAction<boolean>> ) => Promise<void>
 }
  
 export const useAuthStore = create<AuthState>((set) => ({
@@ -78,7 +80,7 @@ ActivationTimer: () => {
   }
 },
 
-  activateAccount:async (payload) => {
+  activateAccount:async (payload,setSuccess) => {
     try {
       let {data} = await api.post('auth/activate-user',payload)
       console.log(data)
@@ -86,7 +88,8 @@ ActivationTimer: () => {
          set({ activateToken: null });
         localStorage.removeItem("activateExpireIn");
         localStorage.removeItem("activateToken");
-        
+        // toast.success('Account activation success. Please Login again')
+        setSuccess(true)
       }
 
     } catch (error) {
@@ -109,13 +112,13 @@ ActivationTimer: () => {
       set({ user: data.user });
     } catch {
       set({ user: null, accessToken: null });
-        setTimeout(() => {
+     
             set({ isChecking: false });
-        },1000)
+        
     } finally {
-        setTimeout(() => {
+      
             set({ isChecking: false });
-        },100)
+       
       
     }
   },

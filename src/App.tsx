@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import { routes } from './route';
 import { useAuthStore } from './store/user';
+import { ToastContainer } from 'react-toastify';
 
 function AppRoutes() {
  return useRoutes(routes);
@@ -20,6 +21,7 @@ function App() {
   if(isChecking){
     return (
       <>
+       
       <div className='w-full h-[100vh] bg-[var(--primary-bg)]'>
         my loading
       </div>
@@ -29,7 +31,7 @@ function App() {
 
   return (
     <>
-      
+       <ToastContainer position='top-center' autoClose={2000} limit={1}/>
      <div>
       <BrowserRouter>
       <Suspense fallback={<div>loading</div>}>

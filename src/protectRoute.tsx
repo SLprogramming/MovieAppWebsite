@@ -35,11 +35,11 @@ export const PublicOnlyRoute = ({ children }:RouteProps) => {
    return <>{children}</>;
 }
 export const ActivateRoute = ({ children }:RouteProps) => {
-     const authStore = useAuthStore()
-        const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
-      if(!activateToken){
-      return <Navigate to={"/login"} replace />
-     }
+    //  const authStore = useAuthStore()
+    //     const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
+    //   if(!activateToken){
+    //   return <Navigate to={"/login"} replace />
+    //  }
    
    return <>{children}</>;
 }
