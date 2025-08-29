@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import defaultPoster from '../assets/default_img.png'; // your local default image
 
 type MovieCardProp = {
@@ -12,6 +12,7 @@ type MovieCardProp = {
 
 const MovieCard = ({ content, id, poster, title, date = '2012-12-02' }: MovieCardProp) => {
   const navigate = useNavigate();
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     poster ? `https://image.tmdb.org/t/p/w500${poster}` : defaultPoster

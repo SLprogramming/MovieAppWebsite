@@ -29,7 +29,7 @@ const Index = () => {
   
    <>
    <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">Movies</h1>
-    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
+    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide px-4 ">
       {movie.data?.slice(0,10).map((e,index) => (
      
           <MovieCard
@@ -47,7 +47,7 @@ const Index = () => {
       </div>
     </div>
    <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md">TV</h1>
-    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide pe-4 ">
+    <div className="w-[100%] flex overflow-x-scroll flex-nowrap py-4 gap-5 scrollbar-hide px-4 ">
       {tv?.data?.slice(0,10).map((e,index) => (
      
           <MovieCard

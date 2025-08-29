@@ -15,7 +15,7 @@ const Activate = () => {
   useEffect(() => {
     let expireIn = localStorage.getItem('activateExpireIn') as string
     if(expireIn) {
-      console.log( parseInt(expireIn) -Date.now()  )
+      // console.log( parseInt(expireIn) -Date.now()  )
       let data = Math.round((parseInt(expireIn) - Date.now())/1000)
       setTimeLeft(data)
     }

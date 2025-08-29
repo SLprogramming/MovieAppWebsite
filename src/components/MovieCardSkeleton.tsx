@@ -2,7 +2,7 @@ const MovieCardSkeleton = () => {
   return (
     <div className="shrink-0 w-[260px] bg-[var(--secondary-bg)] pb-4 rounded-[10px] overflow-hidden shadow-sm cursor-pointer">
       {/* Poster */}
-      <div className="w-full h-[360px] bg-gray-700 animate-pulse" />
+      <div className="w-full h-[405px] bg-gray-700 animate-pulse" />
 
       {/* Title */}
       <div className="mt-2 px-2">

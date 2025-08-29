@@ -6,6 +6,7 @@ import {PublicOnlyRoute,AuthRedirect, ActivateRoute} from "./protectRoute"
 import Content from "./pages/Content";
 import Detail from "./pages/Detail";
 import Activate from "./pages/Activate";
+import Bookmarks from "./pages/Bookmarks";
 
 
 export const routes: RouteObject[] = [
@@ -24,6 +25,21 @@ export const routes: RouteObject[] = [
       {path:'/serie',element:(
         <AuthRedirect>
           <Content key={'tv'} content="tv"/>
+        </AuthRedirect>
+      )},
+      {path:'/bookmark',element:(
+        <AuthRedirect>
+          <Bookmarks key={'bookmark'} contentType="bookmark"/>
+        </AuthRedirect>
+      )},
+      {path:'/recent',element:(
+        <AuthRedirect>
+          <Bookmarks key={'recent'} contentType="recent"/>
+        </AuthRedirect>
+      )},
+      {path:'/favorite',element:(
+        <AuthRedirect>
+          <Bookmarks key={'favorite'} contentType="favorite"/>
         </AuthRedirect>
       )},
     ]

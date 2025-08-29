@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import api from "../axios";
-import type { TVSimilar,MovieSimilar, MovieDetail, TVDetail } from "../types/content";
+import type {
+  TVSimilar,
+  MovieSimilar,
+  MovieDetail,
+  TVDetail,
+} from "../types/content";
 import { data } from "react-router-dom";
 
 export interface MovieContentType {
@@ -39,6 +44,24 @@ export interface TVContentType {
   origin_country: string[];
 }
 
+type SetSpecialContentProp = {
+    content: "movie" | "tv";
+  key: "bookmark" | "favorite" | "recent";
+   data:MovieContentType[] | TVContentType[];
+}
+
+type AddSpecialContentProp = {
+  data:MovieContentType | TVContentType;
+  content: "movie" | "tv";
+  key: "bookmark" | "favorite" | "recent";
+};
+type RemoveSpecialContentProp = {
+  id:number;
+  content: "movie" | "tv";
+  key: "bookmark" | "favorite" | "recent";
+};
+
+
 type ContentType = "movie" | "tv";
 
 interface ContentState {
@@ -49,15 +72,32 @@ interface ContentState {
   movie: {
     page: number;
     data: MovieContentType[];
-    similar:MovieSimilar[];
+    similar: MovieSimilar[];
+    bookmark:MovieContentType[];
+    favorite:MovieContentType[];
+    recent:MovieContentType[];
+    
   };
   tv: {
     page: number;
     data: TVContentType[];
-    similar:TVSimilar[];
+    similar: TVSimilar[];
+      bookmark:TVContentType[];
+    favorite:TVContentType[];
+    recent:TVContentType[];
+    
   };
   fetchContent: (contentType: ContentType) => Promise<void>;
   fetchContentDetail: (contentType: ContentType, id: string) => Promise<void>;
+  fetchSpecialContent: (
+    data: string[],
+    contentType: "movie" | "tv"
+  ) => Promise<any>;
+  addSpecialContent:(payload:AddSpecialContentProp) => void
+  removeSpecailContent:(payload:RemoveSpecialContentProp) => void
+  setSpecialContent:(data :SetSpecialContentProp ) => void
+  
+ 
 }
 
 export const useContentStore = create<ContentState>((set, get) => ({
@@ -68,12 +108,20 @@ export const useContentStore = create<ContentState>((set, get) => ({
   movie: {
     page: 1,
     data: [],
-    similar:[]
+    similar: [],
+    bookmark:[],
+    favorite:[],
+    recent:[],
+   
   },
   tv: {
     page: 1,
     data: [],
-    similar:[]
+    similar: [],
+    bookmark:[],
+    favorite:[],
+    recent:[],
+  
   },
   fetchContent: async (contentType = "movie") => {
     let state = get();
@@ -83,6 +131,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
       } else {
         set({
           [contentType]: {
+            ...state[contentType],
             page: state[contentType].page,
             data: [
               ...state[contentType].data,
@@ -96,6 +145,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
       );
       set({
         [contentType]: {
+          ...state[contentType],
           page: state[contentType].page,
           data: [
             ...state[contentType].data.filter(
@@ -107,6 +157,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
       if (res.data.success) {
         set({
           [contentType]: {
+            ...state[contentType],
             page: state[contentType].page + 1,
             data: [...state[contentType].data, ...res.data.data],
           },
@@ -119,7 +170,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
     }
   },
   fetchContentDetail: async (contentType, id) => {
-    let state = get()
+    let state = get();
     try {
       set({ isLoading: true });
       let res = await api.get(
@@ -134,11 +185,18 @@ export const useContentStore = create<ContentState>((set, get) => ({
       let similarRes = await api.get(
         `content/get-similar/${id}?content=${contentType}`
       );
-      if(similarRes.data.success){
-        console.log(similarRes.data.data)
-        set({[contentType]:{page:state[contentType].page,data:state[contentType].data,similar:similarRes.data.data.slice(0,10)}})
+      if (similarRes.data.success) {
+        // console.log(similarRes.data.data)
+        set({
+          [contentType]: {
+            ...state[contentType],
+            page: state[contentType].page,
+            data: state[contentType].data,
+            similar: similarRes.data.data.slice(0, 10),
+          },
+        });
       }
-      
+
       if (res.data.success) {
         set({ [`${contentType}Detail`]: res.data.data });
       }
@@ -148,5 +206,74 @@ export const useContentStore = create<ContentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
+  fetchSpecialContent: async (data, contentType) => {
+    try {
+      let responses = await Promise.all(
+        data.map((e) =>
+          api.get(`content/get-detail/${e}?content=${contentType}`)
+        )
+      );
+      const resultData = responses
+        .filter((res) => res.data.success)
+        .map((res) => res.data.data);
+      //  console.log(resultData)
+      return resultData;
+    } catch (error) {}
+  },
+addSpecialContent: ({ content = 'movie', key = 'bookmark', data }) => {
+  const state = get();
+  if (data) {
+    const currentList = state[content][key] || [];
+
+    // Add new data at the end
+    let updatedList = [...currentList, data];
+
+    // Keep only last 20
+    if (updatedList.length > 20) {
+      updatedList = updatedList.slice(-20);
+    }
+
+    console.log('add', data, updatedList);
+
+    set({
+      [content]: {
+        ...state[content],
+        [key]: updatedList,
+      },
+    });
+
+  }
+},
+
+removeSpecailContent:({content='movie',key='bookmark',id}) => {
+    const state = get()
+
+  if(id){
+    set({
+      [content]:{
+        ...state[content],
+        [key]:state[content][key].filter(e => e.id !== id)
+      }
+    })
+  }
+},
+setSpecialContent:({key,data,content}:SetSpecialContentProp) => {
+    const state = get()
+    // console.log('set')
+
+  if(data){
+       set({
+      [content]:{
+        ...state[content],
+        [key]:data
+      }
+    })
+  }
+
+}
+
+ 
+
+
   //   setToken: (token) => set({ accessToken: token }),
 }));

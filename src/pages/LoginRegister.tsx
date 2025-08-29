@@ -37,7 +37,7 @@ const Login = () => {
     authStore.login(loginFormInput)
   }
   const handleRegister = () => {
-    console.log('hello')
+    // console.log('hello')
     if(!registerFormInput.email.trim() || !registerFormInput.name.trim() || !registerFormInput.password.trim() ) return
     authStore.register(registerFormInput)
   }
