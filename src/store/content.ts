@@ -220,36 +220,36 @@ export const useContentStore = create<ContentState>((set, get) => ({
       return resultData;
     } catch (error) {}
   },
-addSpecialContent: ({ content = 'movie', key = 'bookmark', data }) => {
-  const state = get();
-  if (data) {
+addSpecialContent: ({ content, key, data }) => {
+  if (!data) return;
+  set((state) => {
     const currentList = state[content][key] || [];
+    const newItems = Array.isArray(data) ? data : [data];
+    let updatedList = [...currentList, ...newItems];
 
-    // Add new data at the end
-    let updatedList = [...currentList, data];
-
-    // Keep only last 20
     if (updatedList.length > 20) {
       updatedList = updatedList.slice(-20);
     }
-
-    console.log('add', data, updatedList);
-
-    set({
+    console.log('data',data)
+    console.log('currentList',currentList)
+    console.log('updatedList',updatedList)
+    return {
+      ...state, // keep root intact
       [content]: {
         ...state[content],
-        [key]: updatedList,
+        [key]: [...updatedList], // new reference always
       },
-    });
-
-  }
+    };
+  });
 },
+
 
 removeSpecailContent:({content='movie',key='bookmark',id}) => {
     const state = get()
 
   if(id){
     set({
+      ...state,
       [content]:{
         ...state[content],
         [key]:state[content][key].filter(e => e.id !== id)
@@ -263,6 +263,7 @@ setSpecialContent:({key,data,content}:SetSpecialContentProp) => {
 
   if(data){
        set({
+        ...state,
       [content]:{
         ...state[content],
         [key]:data

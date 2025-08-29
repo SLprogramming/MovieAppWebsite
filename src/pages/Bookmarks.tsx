@@ -43,9 +43,11 @@ const Bookmarks = ({ contentType }: PropType) => {
       </div>
     );
   }
+
+  
   return (
     <>  
-     <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Movies</h1>
+     {movies.length > 0 && (<><h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Movies</h1>
       <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide pt-3">
         {([...movies].reverse()).map((e, index) => {
           return (
@@ -60,8 +62,8 @@ const Bookmarks = ({ contentType }: PropType) => {
             </div>
           );
         })}
-      </div>
-        <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Series</h1>
+      </div></>)}
+       {series.length > 0 && (<> <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Series</h1>
       <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide pt-3">
         {([...series].reverse()).map((e, index) => {
           return (
@@ -76,7 +78,7 @@ const Bookmarks = ({ contentType }: PropType) => {
             </div>
           );
         })}
-      </div>
+      </div></>)}
     </>
   );
 };

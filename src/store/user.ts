@@ -154,7 +154,7 @@ const {setSpecialContent} = useContentStore.getState()
 contentListToggle: async ({ type, flag, id, isAdd = true }) => {
   const addSpecialContent = useContentStore.getState().addSpecialContent
   const removeSpecailContent = useContentStore.getState().removeSpecailContent
-
+console.log(useContentStore.getState())
   try {
     type UserContentKey =
       | "bookmarksMovies"
