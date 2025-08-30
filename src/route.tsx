@@ -7,6 +7,7 @@ import Content from "./pages/Content";
 import Detail from "./pages/Detail";
 import Activate from "./pages/Activate";
 import Bookmarks from "./pages/Bookmarks";
+import Search from "./pages/Search";
 
 
 export const routes: RouteObject[] = [
@@ -40,6 +41,11 @@ export const routes: RouteObject[] = [
       {path:'/favorite',element:(
         <AuthRedirect>
           <Bookmarks key={'favorite'} contentType="favorite"/>
+        </AuthRedirect>
+      )},
+      {path:'/search',element:(
+        <AuthRedirect>
+          <Search key={'search'} />
         </AuthRedirect>
       )},
     ]

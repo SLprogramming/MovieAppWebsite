@@ -72,6 +72,7 @@ interface ContentState {
     data: string[],
     contentType: "movie" | "tv"
   ) => Promise<any>;
+  searchContent:(payload:{keyword:string,page:number}) => Promise<any>;
   // addSpecialContent:(payload:AddSpecialContentProp) => void
   // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
   // setSpecialContent:(data :SetSpecialContentProp ) => void
@@ -195,6 +196,13 @@ export const useContentStore = create<ContentState>((set, get) => ({
       return resultData;
     } catch (error) {}
   },
+  searchContent:async({keyword,page}) => {
+    try {
+      console.log(keyword,page)
+    } catch (error) {
+      
+    }
+  }
 
 
   //   setToken: (token) => set({ accessToken: token }),

@@ -48,7 +48,7 @@ const Bookmarks = ({ contentType }: PropType) => {
   return (
     <>  
      {movies.length > 0 && (<><h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Movies</h1>
-      <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide pt-3">
+      <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide overflow-y-hidden py-4 ">
         {([...movies].reverse()).map((e, index) => {
           return (
             <div key={index}>
@@ -64,7 +64,7 @@ const Bookmarks = ({ contentType }: PropType) => {
         })}
       </div></>)}
        {series.length > 0 && (<> <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">{contentType} Series</h1>
-      <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide pt-3">
+      <div className="w-full  flex flex-nowrap overflow-x-scroll gap-4 scrollbar-hide overflow-y-hidden py-4">
         {([...series].reverse()).map((e, index) => {
           return (
             <div key={index}>

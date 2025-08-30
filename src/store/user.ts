@@ -219,8 +219,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           flag,
           id,
         });
-        let updatedList = [...state[flag][type], response.data.data];
+        let currentList = state[flag][type].filter(e=>e.id !=id)
+        
+        let updatedList = [...currentList, response.data.data];
         if (updatedList.length > 20 && type == "recent") {
+          
           updatedList = updatedList.slice(-20);
           console.log("updatedlist", updatedList);
         }
