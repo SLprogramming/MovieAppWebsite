@@ -6,7 +6,7 @@ import type {
   MovieDetail,
   TVDetail,
 } from "../types/content";
-import { data } from "react-router-dom";
+
 
 export interface MovieContentType {
   adult: boolean;
@@ -44,23 +44,6 @@ export interface TVContentType {
   origin_country: string[];
 }
 
-type SetSpecialContentProp = {
-    content: "movie" | "tv";
-  key: "bookmark" | "favorite" | "recent";
-   data:MovieContentType[] | TVContentType[];
-}
-
-type AddSpecialContentProp = {
-  data:MovieContentType | TVContentType;
-  content: "movie" | "tv";
-  key: "bookmark" | "favorite" | "recent";
-};
-type RemoveSpecialContentProp = {
-  id:number;
-  content: "movie" | "tv";
-  key: "bookmark" | "favorite" | "recent";
-};
-
 
 type ContentType = "movie" | "tv";
 
@@ -73,18 +56,14 @@ interface ContentState {
     page: number;
     data: MovieContentType[];
     similar: MovieSimilar[];
-    bookmark:MovieContentType[];
-    favorite:MovieContentType[];
-    recent:MovieContentType[];
+  
     
   };
   tv: {
     page: number;
     data: TVContentType[];
     similar: TVSimilar[];
-      bookmark:TVContentType[];
-    favorite:TVContentType[];
-    recent:TVContentType[];
+  
     
   };
   fetchContent: (contentType: ContentType) => Promise<void>;
@@ -93,9 +72,9 @@ interface ContentState {
     data: string[],
     contentType: "movie" | "tv"
   ) => Promise<any>;
-  addSpecialContent:(payload:AddSpecialContentProp) => void
-  removeSpecailContent:(payload:RemoveSpecialContentProp) => void
-  setSpecialContent:(data :SetSpecialContentProp ) => void
+  // addSpecialContent:(payload:AddSpecialContentProp) => void
+  // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
+  // setSpecialContent:(data :SetSpecialContentProp ) => void
   
  
 }
@@ -109,18 +88,14 @@ export const useContentStore = create<ContentState>((set, get) => ({
     page: 1,
     data: [],
     similar: [],
-    bookmark:[],
-    favorite:[],
-    recent:[],
+  
    
   },
   tv: {
     page: 1,
     data: [],
     similar: [],
-    bookmark:[],
-    favorite:[],
-    recent:[],
+   
   
   },
   fetchContent: async (contentType = "movie") => {
@@ -220,60 +195,6 @@ export const useContentStore = create<ContentState>((set, get) => ({
       return resultData;
     } catch (error) {}
   },
-addSpecialContent: ({ content, key, data }) => {
-  if (!data) return;
-  set((state) => {
-    const currentList = state[content][key] || [];
-    const newItems = Array.isArray(data) ? data : [data];
-    let updatedList = [...currentList, ...newItems];
-
-    if (updatedList.length > 20) {
-      updatedList = updatedList.slice(-20);
-    }
-    console.log('data',data)
-    console.log('currentList',currentList)
-    console.log('updatedList',updatedList)
-    return {
-      ...state, // keep root intact
-      [content]: {
-        ...state[content],
-        [key]: [...updatedList], // new reference always
-      },
-    };
-  });
-},
-
-
-removeSpecailContent:({content='movie',key='bookmark',id}) => {
-    const state = get()
-
-  if(id){
-    set({
-      ...state,
-      [content]:{
-        ...state[content],
-        [key]:state[content][key].filter(e => e.id !== id)
-      }
-    })
-  }
-},
-setSpecialContent:({key,data,content}:SetSpecialContentProp) => {
-    const state = get()
-    // console.log('set')
-
-  if(data){
-       set({
-        ...state,
-      [content]:{
-        ...state[content],
-        [key]:data
-      }
-    })
-  }
-
-}
-
- 
 
 
   //   setToken: (token) => set({ accessToken: token }),

@@ -14,8 +14,8 @@ type PropType = {
 };
 
 const Bookmarks = ({ contentType }: PropType) => {
-  const { user } = useAuthStore();
-  const { movie, tv } = useContentStore();
+  const { user,movie,tv } = useAuthStore();
+  // const { movie, tv } = useContentStore();
   const [movies, setMovies] = useState<MovieContentType[]>([]);
   const [series, setSeries] = useState<TVContentType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const Bookmarks = ({ contentType }: PropType) => {
   useEffect(() => {
     ( () => {
       try {
-        console.log(movie.recent,tv.recent)
+        // console.log(movie.recent,tv.recent)
         setMovies(movie[contentType]);
         setSeries(tv[contentType]);
       } catch (error) {

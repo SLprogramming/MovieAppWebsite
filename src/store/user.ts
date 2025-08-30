@@ -4,9 +4,8 @@ import type {
   LoginFormInputType,
   RegisterFormInputType,
 } from "../pages/LoginRegister";
-import { toast } from "react-toastify";
 import type { Dispatch, SetStateAction } from "react";
-import { useContentStore } from "./content";
+import { type MovieContentType, type TVContentType } from "./content";
 
 export interface User {
   _id: string;
@@ -33,6 +32,16 @@ interface AuthState {
   activateToken: string | null;
   isChecking: boolean;
   premiumIn: number;
+  movie: {
+    bookmark: MovieContentType[];
+    favorite: MovieContentType[];
+    recent: MovieContentType[];
+  };
+  tv: {
+    bookmark: TVContentType[];
+    favorite: TVContentType[];
+    recent: TVContentType[];
+  };
   login: (payload: LoginFormInputType) => Promise<void>;
   register: (payload: RegisterFormInputType) => Promise<void>;
   logout: () => Promise<void>;
@@ -45,10 +54,10 @@ interface AuthState {
     id,
     isAdd,
   }: {
-    type: "favorite" | "bookmark" | 'recent';
+    type: "favorite" | "bookmark" | "recent";
     flag: "movie" | "tv";
     id: number;
-    isAdd:boolean
+    isAdd: boolean;
   }) => Promise<any>;
   activateAccount: (
     {
@@ -59,15 +68,23 @@ interface AuthState {
   ) => Promise<void>;
 }
 
-
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   accessToken: null,
   activateToken: null,
   isChecking: true,
   premiumIn: 0,
+  movie: {
+    bookmark: [],
+    favorite: [],
+    recent: [],
+  },
+  tv: {
+    bookmark: [],
+    favorite: [],
+    recent: [],
+  },
   setToken: (token) => set({ accessToken: token }),
-  
 
   login: async ({ email, password }) => {
     const { data } = await api.post("auth/login", { email, password });
@@ -108,7 +125,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   activateAccount: async (payload, setSuccess) => {
     try {
       let { data } = await api.post("auth/activate-user", payload);
-      // console.log(data);
+
       if (data.success) {
         set({ activateToken: null });
         localStorage.removeItem("activateExpireIn");
@@ -125,19 +142,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   fetchMe: async () => {
-      
-const {setSpecialContent} = useContentStore.getState()
+    const state = get();
+    // const {setSpecialContent} = useContentStore.getState()
     set({ isChecking: true });
     try {
       const { data } = await api.get("/auth/info");
-      set({ user: data.user });
-      let {bookmarksMovies,bookmarksTV,favoritesMovies,favoritesTV,recentMovies,recentTV} = data.content
-      setSpecialContent({content:'movie',key:'bookmark',data:bookmarksMovies})
-      setSpecialContent({content:'movie',key:'favorite',data:favoritesMovies})
-      setSpecialContent({content:'tv',key:'favorite',data:favoritesTV})
-      setSpecialContent({content:'tv',key:'bookmark',data:bookmarksTV})
-      setSpecialContent({content:'tv',key:'recent',data:recentTV})
-      setSpecialContent({content:'movie',key:'recent',data:recentMovies})
+      let {
+        bookmarksMovies,
+        bookmarksTV,
+        favoritesMovies,
+        favoritesTV,
+        recentMovies,
+        recentTV,
+      } = data.content;
+      set({
+        ...state,
+        user: data.user,
+        movie: {
+          recent: recentMovies,
+          bookmark: bookmarksMovies,
+          favorite: favoritesMovies,
+        },
+        tv: {
+          recent: recentTV,
+          bookmark: bookmarksTV,
+          favorite: favoritesTV,
+        },
+      });
+
+      // setSpecialContent({content:'movie',key:'bookmark',data:bookmarksMovies})
+      // setSpecialContent({content:'movie',key:'favorite',data:favoritesMovies})
+      // setSpecialContent({content:'tv',key:'favorite',data:favoritesTV})
+      // setSpecialContent({content:'tv',key:'bookmark',data:bookmarksTV})
+      // setSpecialContent({content:'tv',key:'recent',data:recentTV})
+      // setSpecialContent({content:'movie',key:'recent',data:recentMovies})
       if (data?.user?.premiumExpire) {
         let premiumExpire =
           new Date(data?.user?.premiumExpire).getTime() - Date.now();
@@ -151,76 +189,89 @@ const {setSpecialContent} = useContentStore.getState()
       set({ isChecking: false });
     }
   },
-contentListToggle: async ({ type, flag, id, isAdd = true }) => {
-  const addSpecialContent = useContentStore.getState().addSpecialContent
-  const removeSpecailContent = useContentStore.getState().removeSpecailContent
-console.log(useContentStore.getState())
-  try {
-    type UserContentKey =
-      | "bookmarksMovies"
-      | "favoritesMovies"
-      | "bookmarksTV"
-      | "favoritesTV"
-      | "recentTV"
-      | "recentMovies";
+  contentListToggle: async ({ type, flag, id, isAdd = true }) => {
+    try {
+      type UserContentKey =
+        | "bookmarksMovies"
+        | "favoritesMovies"
+        | "bookmarksTV"
+        | "favoritesTV"
+        | "recentTV"
+        | "recentMovies";
 
-    const state = get();
+      const state = get();
 
-    if (!state.user) return; // no logged-in user
+      if (!state.user) return; // no logged-in user
 
-    let keyData: UserContentKey;
-    if (type === "bookmark") {
-      keyData = flag === "movie" ? "bookmarksMovies" : "bookmarksTV";
-    }else if( type == 'recent'){
-     keyData = flag === "movie" ? "recentMovies" : "recentTV";
-    } else {
-      keyData = flag === "movie" ? "favoritesMovies" : "favoritesTV";
-    }
-
-    if (isAdd) {
-      // Call API for adding
-      let response = await api.put("user/add-bookmarks-favorate", {
-        type,
-        flag,
-        id,
-      });
-
-      if (response.data.success) {
-        set({
-          user: {
-            ...state.user,
-            [keyData]: [...state.user[keyData], id.toString()],
-          },
-        });
-        addSpecialContent({content:flag , key:type ,data:response.data.data})
-        return {success:true,message:'bookmark add successfully'}
+      let keyData: UserContentKey;
+      if (type === "bookmark") {
+        keyData = flag === "movie" ? "bookmarksMovies" : "bookmarksTV";
+      } else if (type == "recent") {
+        keyData = flag === "movie" ? "recentMovies" : "recentTV";
+      } else {
+        keyData = flag === "movie" ? "favoritesMovies" : "favoritesTV";
       }
-    } else {
-      // Call API for removing
-      let response = await api.put("user/remove-bookmarks-favorate", {
-        type,
-        flag,
-        id,
-      });
 
-      if (response.data.success) {
-        set({
-          user: {
-            ...state.user,
-            [keyData]: state.user[keyData].filter(
-              (item) => item.toString() !== id.toString()
-            ),
-          },
+      if (isAdd) {
+        // Call API for adding
+        let response = await api.put("user/add-bookmarks-favorate", {
+          type,
+          flag,
+          id,
         });
-        removeSpecailContent({content:flag , key:type ,id})
-         return {success:true,message:'bookmark remove successfully'}
-      }
-    }
-  } catch (error) {
-     return {success:false,message:`bookmark ${isAdd ? 'add' :'remove'} fail`}
-    console.error("Failed to update content list", error);
-  }
-},
+        let updatedList = [...state[flag][type], response.data.data];
+        if (updatedList.length > 20 && type == "recent") {
+          updatedList = updatedList.slice(-20);
+          console.log("updatedlist", updatedList);
+        }
+        if (response.data.success) {
+          set({
+            user: {
+              ...state.user,
+              [keyData]: [...state.user[keyData], id.toString()],
+            },
+            [flag]: {
+              ...state[flag],
+              [type]: updatedList,
+            },
+          });
+          // useContentStore.getState().addSpecialContent({content:flag , key:type ,data:response.data.data})
 
- 
+          return { success: true, message: "bookmark add successfully" };
+        }
+      } else {
+        // Call API for removing
+        let response = await api.put("user/remove-bookmarks-favorate", {
+          type,
+          flag,
+          id,
+        });
+
+        if (response.data.success) {
+          set({
+            user: {
+              ...state.user,
+              [keyData]: state.user[keyData].filter(
+                (item) => item.toString() !== id.toString()
+              ),
+            },
+            [flag]: {
+              ...state[flag],
+              [type]: state[flag][type].filter((e) => e.id != id),
+            },
+          });
+          // removeSpecailContent({content:flag , key:type ,id})
+          return { success: true, message: "bookmark remove successfully" };
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `bookmark ${isAdd ? "add" : "remove"} fail`,
+      };
+      console.error("Failed to update content list", error);
+    } finally {
+      // console.log(useContentStore.getState())
+    }
+  },
 }));
