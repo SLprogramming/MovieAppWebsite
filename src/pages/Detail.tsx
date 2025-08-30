@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import  { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useContentStore } from "../store/content";
-import { div } from "framer-motion/client";
+
 import {
   Bookmark,
   Calendar,
@@ -134,7 +134,7 @@ const Detail = () => {
                 isPosterLoaded ? "opacity-100" : "opacity-0"
               }`}
               onLoad={() => setIsPosterLoaded(true)}
-              onError={(e) => {
+              onError={() => {
                 if (imgSrc !== defaultPoster) {
                   setImgSrc(defaultPoster); // only swap once
                 }

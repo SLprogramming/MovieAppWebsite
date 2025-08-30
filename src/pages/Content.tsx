@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import  { useEffect, useRef } from "react";
 import {
   useContentStore,
-  type MovieContentType,
-  type TVContentType,
+
 } from "../store/content";
 import MovieCard from "../components/MovieCard";
 import { useInfiniteFetch } from "../hooks/InfiniteFetch";

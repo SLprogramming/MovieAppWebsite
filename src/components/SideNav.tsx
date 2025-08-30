@@ -1,5 +1,5 @@
 import { BookHeart, Bookmark, CircleDollarSign, Clapperboard, ClockFading, Film, Hash, House, Search, Settings, Shapes, SquareUser } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useNavigate,useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/user'
 

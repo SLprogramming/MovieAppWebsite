@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import {  useNavigate } from 'react-router-dom';
 import defaultPoster from '../assets/default_img.png'; // your local default image
 

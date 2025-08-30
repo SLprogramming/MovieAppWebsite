@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
-import React from 'react'
-import IndexSkeleton from './IndexSkeleton';
+// import React from 'react'
+// import IndexSkeleton from './IndexSkeleton';
 import MovieCardSkeleton from './MovieCardSkeleton';
 
 const SkeletonDetail = () => {

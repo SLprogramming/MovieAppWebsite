@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import api from "../axios";
+import  { useEffect } from "react";
+// import api from "../axios";
 import { useContentStore } from "../store/content";
 import MovieCard from "../components/MovieCard";
-import { h1 } from "framer-motion/client";
+// import { h1 } from "framer-motion/client";
 import { useNavigate } from "react-router-dom";
 import IndexSkeleton from "../components/IndexSkeleton";
 

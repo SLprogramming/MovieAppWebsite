@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useAuthStore } from "../store/user";
 import {
-  useContentStore,
+  
   type MovieContentType,
   type TVContentType,
 } from "../store/content";

@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/user";
 import type { MovieContentType } from "../store/content";
 import MovieCard from "../components/MovieCard";
 const SearchPage = () => {
-  const { movie, tv } = useAuthStore();
+  const { movie } = useAuthStore();
   const [contents, setContents] = useState<MovieContentType[]>([]);
   const [keyword,setKeyword] = useState('')
  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
