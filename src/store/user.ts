@@ -66,6 +66,7 @@ interface AuthState {
     }: { activation_token: string; activation_code: string },
     setSuccess: Dispatch<SetStateAction<boolean>>
   ) => Promise<void>;
+  fetchSpecialContent:({type,key}:{type:'movie' | 'tv' ,key:'bookmark' | 'favorite' | 'recent'}) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -88,7 +89,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   login: async ({ email, password }) => {
     const { data } = await api.post("auth/login", { email, password });
-    set({ user: data.user, accessToken: data.accessToken });
+    let premiumExpire =
+          new Date(data?.user?.premiumExpire).getTime() - Date.now();
+    set({ user: data.user, accessToken: data.accessToken ,premiumIn:premiumExpire});
   },
   register: async ({ name, email, password }) => {
     const { data } = await api.post("auth/register", { name, email, password });
@@ -137,8 +140,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
-    await api.post("/auth/logout");
-    set({ user: null, accessToken: null });
+    await api.get("/auth/logout");
+    set({ user: null, accessToken: null,premiumIn: 0,
+  movie: {
+    bookmark: [],
+    favorite: [],
+    recent: [],
+  },
+  tv: {
+    bookmark: [],
+    favorite: [],
+    recent: [],
+  }, });
   },
 
   fetchMe: async () => {
@@ -147,35 +160,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isChecking: true });
     try {
       const { data } = await api.get("/auth/info");
-      let {
-        bookmarksMovies,
-        bookmarksTV,
-        favoritesMovies,
-        favoritesTV,
-        recentMovies,
-        recentTV,
-      } = data.content;
+   
       set({
         ...state,
         user: data.user,
-        movie: {
-          recent: recentMovies,
-          bookmark: bookmarksMovies,
-          favorite: favoritesMovies,
-        },
-        tv: {
-          recent: recentTV,
-          bookmark: bookmarksTV,
-          favorite: favoritesTV,
-        },
+      
       });
 
-      // setSpecialContent({content:'movie',key:'bookmark',data:bookmarksMovies})
-      // setSpecialContent({content:'movie',key:'favorite',data:favoritesMovies})
-      // setSpecialContent({content:'tv',key:'favorite',data:favoritesTV})
-      // setSpecialContent({content:'tv',key:'bookmark',data:bookmarksTV})
-      // setSpecialContent({content:'tv',key:'recent',data:recentTV})
-      // setSpecialContent({content:'movie',key:'recent',data:recentMovies})
+      
       if (data?.user?.premiumExpire) {
         let premiumExpire =
           new Date(data?.user?.premiumExpire).getTime() - Date.now();
@@ -227,6 +219,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           updatedList = updatedList.slice(-20);
           console.log("updatedlist", updatedList);
         }
+        console.log("updatedlist", updatedList);
         if (response.data.success) {
           set({
             user: {
@@ -277,4 +270,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // console.log(useContentStore.getState())
     }
   },
+  fetchSpecialContent:async({key,type}) => {
+    try {
+      // console.log('fetching special contetn')
+      const state = get()
+      
+      let url = `content/get/${key}/${type}`
+      let {data} =await api.get(url)
+      if(data.success){
+          set({
+        ...state,
+        
+       [type]:{
+        ...state[type],
+        [key]:data.data
+       }
+      });
+      }
+      // console.log(key)
+    } catch (error) {
+      
+    }
+  }
 }));

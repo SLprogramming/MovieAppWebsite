@@ -68,10 +68,10 @@ interface ContentState {
   };
   fetchContent: (contentType: ContentType) => Promise<void>;
   fetchContentDetail: (contentType: ContentType, id: string) => Promise<void>;
-  fetchSpecialContent: (
-    data: string[],
-    contentType: "movie" | "tv"
-  ) => Promise<any>;
+  // fetchSpecialContent: (
+  //   data: string[],
+  //   contentType: "movie" | "tv"
+  // ) => Promise<any>;
   searchContent:(payload:{keyword:string,page:number}) => Promise<any>;
   // addSpecialContent:(payload:AddSpecialContentProp) => void
   // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
@@ -182,20 +182,20 @@ export const useContentStore = create<ContentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchSpecialContent: async (data, contentType) => {
-    try {
-      let responses = await Promise.all(
-        data.map((e) =>
-          api.get(`content/get-detail/${e}?content=${contentType}`)
-        )
-      );
-      const resultData = responses
-        .filter((res) => res.data.success)
-        .map((res) => res.data.data);
-      //  console.log(resultData)
-      return resultData;
-    } catch (error) {}
-  },
+  // fetchSpecialContent: async (data, contentType) => {
+  //   try {
+  //     let responses = await Promise.all(
+  //       data.map((e) =>
+  //         api.get(`content/get-detail/${e}?content=${contentType}`)
+  //       )
+  //     );
+  //     const resultData = responses
+  //       .filter((res) => res.data.success)
+  //       .map((res) => res.data.data);
+  //     //  console.log(resultData)
+  //     return resultData;
+  //   } catch (error) {}
+  // },
   searchContent:async({keyword,page}) => {
     try {
       console.log(keyword,page)

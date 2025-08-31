@@ -70,7 +70,7 @@ const Detail = () => {
     calledRef.current = id;
       fetchDetail();
       // console.log()
-       contentListToggle({type:'recent',flag:contentType,isAdd:true,id:parseInt(id as string)})
+      await contentListToggle({type:'recent',flag:contentType,isAdd:true,id:parseInt(id as string)})
      
     })();
   }, [id]);

@@ -16,8 +16,10 @@ function App() {
   
   useEffect(() => {
     fetchMe();
-    ActivationTimer();
+     ActivationTimer();
+   
   }, []);
+ 
 
   if (isChecking) {
     return (

@@ -41,7 +41,7 @@ const Movie = ({ content = "movie" }: { content: "movie" | "tv" }) => {
 
  }
   return (
-    <div className="w-full  flex flex-wrap gap-4 scrollbar-hide pt-3" >
+    <div className="w-full grid grid-cols-3 sm:grid-cols-4 md:flex  flex-wrap overflow-y-scroll gap-4 lg:gap-6 scrollbar-hide pt-3" >
      
       {myContents?.data?.map((e, index) => {
         const isLast = index === myContents.data.length - 1;
