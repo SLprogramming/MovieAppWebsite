@@ -90,8 +90,8 @@ const Detail = () => {
     // console.log(bookmarkContents, data, bookmarkContents.includes(data));
     
     
-
-      setIsBookmark(bookmarkContents.includes({type:contentType,id:data}));
+//{type:contentType,id:data}
+      setIsBookmark(bookmarkContents.some(e => e.id == data && e.type == contentType));
     
   }, [bookmarkContents, content,contentType]);
 
