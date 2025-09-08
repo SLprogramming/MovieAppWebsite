@@ -7,6 +7,11 @@ import type {
 import type { Dispatch, SetStateAction } from "react";
 import { type MovieContentType, type TVContentType } from "./content";
 
+
+export interface SpecialContentsType {
+  type:'movie' | 'tv',
+  id:number
+}
 export interface User {
   _id: string;
   name: string;
@@ -15,12 +20,9 @@ export interface User {
   password: string;
   role: "user" | "admin"; // if you expect only these roles
   isVerified: boolean;
-  bookmarksMovies: string[]; // or maybe Movie[] if you have a Movie type
-  favoritesMovies: string[];
-  bookmarksTV: string[];
-  favoritesTV: string[];
-  recentMovies: string[];
-  recentTV: string[];
+  bookmark: SpecialContentsType[]; // or maybe Movie[] if you have a Movie type
+  favorite: SpecialContentsType[];
+  recent: SpecialContentsType[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -32,16 +34,10 @@ interface AuthState {
   activateToken: string | null;
   isChecking: boolean;
   premiumIn: number;
-  movie: {
-    bookmark: MovieContentType[];
-    favorite: MovieContentType[];
-    recent: MovieContentType[];
-  };
-  tv: {
-    bookmark: TVContentType[];
-    favorite: TVContentType[];
-    recent: TVContentType[];
-  };
+  bookmark: (MovieContentType | TVContentType)[];
+  favorite: (MovieContentType | TVContentType)[];
+  recent: (MovieContentType | TVContentType)[];
+
   login: (payload: LoginFormInputType) => Promise<void>;
   register: (payload: RegisterFormInputType) => Promise<void>;
   logout: () => Promise<void>;
@@ -66,7 +62,7 @@ interface AuthState {
     }: { activation_token: string; activation_code: string },
     setSuccess: Dispatch<SetStateAction<boolean>>
   ) => Promise<void>;
-  fetchSpecialContent:({type,key}:{type:'movie' | 'tv' ,key:'bookmark' | 'favorite' | 'recent'}) => Promise<void>
+  fetchSpecialContent:({key}:{key:'bookmark' | 'favorite' | 'recent'}) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -75,16 +71,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   activateToken: null,
   isChecking: true,
   premiumIn: 0,
-  movie: {
     bookmark: [],
     favorite: [],
     recent: [],
-  },
-  tv: {
-    bookmark: [],
-    favorite: [],
-    recent: [],
-  },
+
+
   setToken: (token) => set({ accessToken: token }),
 
   login: async ({ email, password }) => {
@@ -141,17 +132,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     await api.get("/auth/logout");
-    set({ user: null, accessToken: null,premiumIn: 0,
-  movie: {
-    bookmark: [],
+    set({ user: null, accessToken: null,premiumIn: 0,  bookmark: [],
     favorite: [],
     recent: [],
-  },
-  tv: {
-    bookmark: [],
-    favorite: [],
-    recent: [],
-  }, });
+  });
   },
 
   fetchMe: async () => {
@@ -183,26 +167,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   contentListToggle: async ({ type, flag, id, isAdd = true }) => {
     try {
-      type UserContentKey =
-        | "bookmarksMovies"
-        | "favoritesMovies"
-        | "bookmarksTV"
-        | "favoritesTV"
-        | "recentTV"
-        | "recentMovies";
-
+   
       const state = get();
 
       if (!state.user) return; // no logged-in user
 
-      let keyData: UserContentKey;
-      if (type === "bookmark") {
-        keyData = flag === "movie" ? "bookmarksMovies" : "bookmarksTV";
-      } else if (type == "recent") {
-        keyData = flag === "movie" ? "recentMovies" : "recentTV";
-      } else {
-        keyData = flag === "movie" ? "favoritesMovies" : "favoritesTV";
-      }
+      
+   
 
       if (isAdd) {
         // Call API for adding
@@ -211,7 +182,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           flag,
           id,
         });
-        let currentList = state[flag][type].filter(e=>e.id !=id)
+        
+        let currentList = state[type].filter(e=>!(e.id ==id && ('release_date' in e ? 'movie' :'tv') === flag) )
         
         let updatedList = [...currentList, response.data.data];
         if (updatedList.length > 20 && type == "recent") {
@@ -224,12 +196,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           set({
             user: {
               ...state.user,
-              [keyData]: [...state.user[keyData], id.toString()],
+              [type]: [...state.user[type].filter(e=> !(e.id == id && e.type == flag )),{type:flag , id}],
             },
-            [flag]: {
-              ...state[flag],
+            
               [type]: updatedList,
-            },
+            
           });
           // useContentStore.getState().addSpecialContent({content:flag , key:type ,data:response.data.data})
 
@@ -247,14 +218,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           set({
             user: {
               ...state.user,
-              [keyData]: state.user[keyData].filter(
+              [type]: state.user[type].filter(
                 (item) => item.toString() !== id.toString()
               ),
             },
-            [flag]: {
-              ...state[flag],
-              [type]: state[flag][type].filter((e) => e.id != id),
-            },
+        
+              [type]: state[type].filter((e) => e.id != id),
+            
           });
           // removeSpecailContent({content:flag , key:type ,id})
           return { success: true, message: "bookmark remove successfully" };
@@ -270,21 +240,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // console.log(useContentStore.getState())
     }
   },
-  fetchSpecialContent:async({key,type}) => {
+  fetchSpecialContent:async({key}) => {
     try {
       // console.log('fetching special contetn')
       const state = get()
       
-      let url = `content/get/${key}/${type}`
+      let url = `content/get/${key}`
       let {data} =await api.get(url)
       if(data.success){
           set({
         ...state,
         
-       [type]:{
-        ...state[type],
+       
         [key]:data.data
-       }
+       
       });
       }
       // console.log(key)

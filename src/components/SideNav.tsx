@@ -53,7 +53,7 @@ const navItems = [
     {
         title:"Genre",
         icon:<Shapes />,
-        url:"#"
+        url:"/genre"
     },
     {
         title:"Tags",

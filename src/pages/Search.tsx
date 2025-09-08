@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { useAuthStore } from "../store/user";
-import type { MovieContentType } from "../store/content";
+import {
+  useContentStore,
+  type MovieContentType,
+  type TVContentType,
+} from "../store/content";
 import MovieCard from "../components/MovieCard";
 const SearchPage = () => {
-  const { movie } = useAuthStore();
-  const [contents, setContents] = useState<MovieContentType[]>([]);
-  const [keyword,setKeyword] = useState('')
- const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
+  // const { movie } = useAuthStore();
+  const { searchContent,searchedContents,searchKeyword} = useContentStore();
+  const [contents, setContents] = useState<
+    (MovieContentType | TVContentType)[]
+  >([]);
+  const [keyword, setKeyword] = useState("");
+  // const [page,setPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -17,15 +28,31 @@ const SearchPage = () => {
     if (timeoutId) clearTimeout(timeoutId);
 
     // set new debounce timeout
-    const newTimeout = setTimeout(() => {
-      console.log("query run:", value);
+    const newTimeout = setTimeout(async () => {
+      if(value.trim() == ""){
+        setContents([])
+        return
+      }
+      try {
+        setIsLoading(true);
+       let success =  await searchContent({ keyword: value, page: 1 });
+       
+        console.log("query run:", value);
+      } catch (error) {
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
     }, 800);
 
     setTimeoutId(newTimeout);
   };
+
   useEffect(() => {
-    setContents(movie.recent);
-  }, []);
+    setKeyword(searchKeyword)
+    setContents(searchedContents)
+  },[searchedContents])
+
   return (
     <>
       <div className="w-full p-4">
@@ -47,19 +74,27 @@ const SearchPage = () => {
 
         {/* Results Container */}
         <div className="w-full flex flex-wrap gap-4 scrollbar-hide pt-4">
-          {[...contents].reverse().map((e, index) => {
-            return (
-              <div key={index}>
-                <MovieCard
-                  content="movie"
-                  date={e.release_date}
-                  id={e.id}
-                  poster={e.poster_path}
-                  title={e.title}
-                ></MovieCard>
-              </div>
-            );
-          })}
+          {isLoading ? (
+            <div className="w-full h-[500px] flex justify-center items-center">
+              <div className="w-12 h-12 border-4 border-[var(--secondary-bg)] border-t-[var(--text-highlight)] rounded-full animate-spin mb-4"></div>
+            </div>
+          ) : (
+            contents.map((e) => {
+              return (
+                <div key={e.id}>
+                  <MovieCard
+                    content={"release_date" in e ? "movie" : "tv"}
+                    date={
+                      "release_date" in e ? e.release_date : e.first_air_date
+                    }
+                    id={e.id}
+                    poster={e.poster_path}
+                    title={"title" in e ? e.title : e.name}
+                  ></MovieCard>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </>

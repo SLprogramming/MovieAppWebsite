@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuthStore, type User } from "../store/user";
+import { useAuthStore, type SpecialContentsType, type User } from "../store/user";
 import { type MovieContentType, type TVContentType } from "../store/content";
 
 import MovieCard from "../components/MovieCard";
@@ -10,28 +10,16 @@ type PropType = {
 };
 
 const Bookmarks = ({ contentType }: PropType) => {
-  const { movie, tv, fetchSpecialContent ,user} = useAuthStore();
-   let userKey = {
-        movie:{
-          recent:'recentMovies',
-          bookmark:'bookmarksMovies',
-          favorite:'favoritesMovies',
-        },
-        tv:{
-          recent:'recentTV',
-          bookmark:'bookmarksTV',
-          favorite:'favoritesTV',
-        }
-      }
+  const {  fetchSpecialContent ,user} = useAuthStore();
+  const authStore = useAuthStore()
+ 
 
 
-let userMovieContent: string[] = (user?.[userKey.movie[contentType] as keyof User] as string[]) ?? []
-let userTVContent: string[] = (user?.[userKey.tv[contentType] as keyof User] as string[]) ?? []
+let userContent: SpecialContentsType[] = (user?.[contentType as keyof User] as SpecialContentsType[]) ?? []
 
 
   // const { movie, tv } = useContentStore();
-  const [movies, setMovies] = useState<MovieContentType[]>([]);
-  const [series, setSeries] = useState<TVContentType[]>([]);
+  const [contents, setContents] = useState<(MovieContentType | TVContentType)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -40,12 +28,10 @@ let userTVContent: string[] = (user?.[userKey.tv[contentType] as keyof User] as 
      
      
       if(user){
-        
-        console.log(movie[contentType].length != userMovieContent?.length)
-        movie[contentType].length != userMovieContent?.length  &&
-          (await fetchSpecialContent({ type: "movie", key: contentType }));
-        tv[contentType].length != userTVContent?.length &&
-          (await fetchSpecialContent({ type: "tv", key: contentType }));
+        console.log(authStore[contentType].length , userContent?.length)
+        authStore[contentType].length != userContent?.length  &&
+          (await fetchSpecialContent({ key: contentType }));
+
       }
     })();
   }, []);
@@ -53,8 +39,8 @@ let userTVContent: string[] = (user?.[userKey.tv[contentType] as keyof User] as 
     (() => {
       try {
         // console.log(movie.recent,tv.recent)
-        setMovies(movie[contentType]);
-        setSeries(tv[contentType]);
+        setContents(authStore[contentType]);
+      
         // console.log(movie[contentType],tv[contentType])
       } catch (error) {
         setIsLoading(false);
@@ -62,7 +48,7 @@ let userTVContent: string[] = (user?.[userKey.tv[contentType] as keyof User] as 
         setIsLoading(false);
       }
     })();
-  }, [movie, tv]);
+  }, [authStore[contentType]]);
 
   if (isLoading) {
     return (
@@ -76,49 +62,28 @@ let userTVContent: string[] = (user?.[userKey.tv[contentType] as keyof User] as 
 
   return (
     <>
-      {movies.length > 0 && (
+      {contents.length > 0 && (
         <>
           <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">
-            {contentType} Movies
+            {contentType}
           </h1>
-          <div className="w-full  flex flex-nowrap overflow-x-scroll gap-3 scrollbar-hide overflow-y-hidden py-4 pt-2 md:pt-4">
-            {[...movies].reverse().map((e, index) => {
+          <div className="w-full  flex flex-wrap gap-3  py-4 pt-2 md:pt-4">
+            {[...contents].reverse().map((e, index) => {
               return (
                 <MovieCard
-                  key={index}
-                  content="movie"
-                  date={e?.release_date}
+                  key={`${e.id}-${index}`}
+                  content={"release_date" in e ? 'movie' : 'tv'}
+                  date={'release_date' in e ? e.release_date : e.first_air_date}
                   id={e?.id}
                   poster={e?.poster_path}
-                  title={e?.title}
+                  title={'title' in e? e.title : e.name}
                 ></MovieCard>
               );
             })}
           </div>
         </>
       )}
-      {series.length > 0 && (
-        <>
-          {" "}
-          <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">
-            {contentType} Series
-          </h1>
-          <div className="w-full  flex flex-nowrap overflow-x-scroll gap-3 scrollbar-hide overflow-y-hidden py-4 pt-2 md:pt-4">
-            {[...series].reverse().map((e) => {
-              return (
-                <MovieCard
-                  key={e?.id}
-                  content="tv"
-                  date={e?.first_air_date}
-                  id={e?.id}
-                  poster={e?.poster_path}
-                  title={e?.name}
-                ></MovieCard>
-              );
-            })}
-          </div>
-        </>
-      )}
+   
     </>
   );
 };

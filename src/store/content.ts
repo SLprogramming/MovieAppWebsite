@@ -26,6 +26,11 @@ export interface MovieContentType {
   vote_count: number;
 }
 
+export interface GenreType {
+  id:number;
+  name:string;
+}
+
 export interface TVContentType {
   adult: boolean;
   backdrop_path: string | null;
@@ -52,10 +57,16 @@ interface ContentState {
   isLoading: boolean;
   movieDetail: MovieDetail;
   tvDetail: TVDetail;
+  searchedContents:(MovieContentType | TVContentType)[] ;
+  searchKeyword:string;
+  
   movie: {
     page: number;
     data: MovieContentType[];
     similar: MovieSimilar[];
+    genre:GenreType[];
+    genreContents:MovieContentType[];
+    
   
     
   };
@@ -63,6 +74,8 @@ interface ContentState {
     page: number;
     data: TVContentType[];
     similar: TVSimilar[];
+    genre:GenreType[];
+    genreContents:TVContentType[];
   
     
   };
@@ -73,6 +86,7 @@ interface ContentState {
   //   contentType: "movie" | "tv"
   // ) => Promise<any>;
   searchContent:(payload:{keyword:string,page:number}) => Promise<any>;
+  fetchGenres : () => Promise<void>  
   // addSpecialContent:(payload:AddSpecialContentProp) => void
   // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
   // setSpecialContent:(data :SetSpecialContentProp ) => void
@@ -82,6 +96,8 @@ interface ContentState {
 
 export const useContentStore = create<ContentState>((set, get) => ({
   // castMembers: [],
+  searchKeyword:'',
+  searchedContents:[],
   isLoading: true,
   movieDetail: {} as MovieDetail,
   tvDetail: {} as TVDetail,
@@ -89,6 +105,8 @@ export const useContentStore = create<ContentState>((set, get) => ({
     page: 1,
     data: [],
     similar: [],
+    genre: [],
+    genreContents: [],
   
    
   },
@@ -96,6 +114,8 @@ export const useContentStore = create<ContentState>((set, get) => ({
     page: 1,
     data: [],
     similar: [],
+    genre: [],
+     genreContents: [],
    
   
   },
@@ -198,7 +218,43 @@ export const useContentStore = create<ContentState>((set, get) => ({
   // },
   searchContent:async({keyword,page}) => {
     try {
-      console.log(keyword,page)
+      
+      let res = await api.get(`content/search/${page}?keyword=${keyword}`)
+      // console.log(res)
+      // console.log(keyword,page)
+      set((state) => {
+        return {
+          ...state,
+          searchedContents:res.data.data,
+          searchKeyword:keyword,
+        }
+      })
+      return res.data.success
+      // return res
+    } catch (error) {
+      
+    }
+  },
+  fetchGenres:async () => {
+    try {
+      
+      let movieRes = await api.get(`content/get-genres?content=movie`)
+      let tvRes = await api.get(`content/get-genres?content=tv`)
+      if(movieRes.data.success && tvRes.data.success){
+        set( state => {
+          return {
+            ...state,
+            movie:{
+              ...state.movie,
+              genre:movieRes.data.data
+            },
+            tv:{
+              ...state.tv,
+              genre:tvRes.data.data
+            }
+          }
+        })
+      }
     } catch (error) {
       
     }

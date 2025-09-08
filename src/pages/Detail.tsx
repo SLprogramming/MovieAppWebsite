@@ -13,7 +13,7 @@ import {
 import SkeletonDetail from "../components/SkeletonDetail";
 import MovieCard from "../components/MovieCard";
 import defaultPoster from "../assets/default_img.png";
-import { useAuthStore } from "../store/user";
+import { useAuthStore, type SpecialContentsType } from "../store/user";
 import { useTrackRoute } from "../hooks/useTrackRoute";
 
 const Detail = () => {
@@ -25,7 +25,7 @@ const Detail = () => {
   const [premiumDay, setPremiumDay] = useState(0);
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const [bookmarkContents, setBookmarkContents] = useState<string[]>([]);
+  const [bookmarkContents, setBookmarkContents] = useState<SpecialContentsType[]>([]);
   const [isBookmark, setIsBookmark] = useState(false);
   const [activeButton, setActiveButton] = useState<null | "watch" | "review">(
     null
@@ -84,16 +84,14 @@ const Detail = () => {
 
   useEffect(() => {
     let data = (content.id || 0).toString();
-    if (contentType == "movie") {
-      setBookmarkContents(user?.bookmarksMovies as string[]);
-    } else {
-      setBookmarkContents(user?.bookmarksTV as string[]);
-    }
+   
+      setBookmarkContents(user?.bookmark as SpecialContentsType[]);
+   
     // console.log(bookmarkContents, data, bookmarkContents.includes(data));
     
     
 
-      setIsBookmark(bookmarkContents.includes(data));
+      setIsBookmark(bookmarkContents.includes({type:contentType,id:parseInt(data)}));
     
   }, [bookmarkContents, content,contentType]);
 

@@ -8,6 +8,8 @@ import Detail from "./pages/Detail";
 import Activate from "./pages/Activate";
 import Bookmarks from "./pages/Bookmarks";
 import Search from "./pages/Search";
+import Genres from "./pages/Genres";
+import GenreContent from "./pages/GenreContent";
 
 
 export const routes: RouteObject[] = [
@@ -46,6 +48,16 @@ export const routes: RouteObject[] = [
       {path:'/search',element:(
         <AuthRedirect>
           <Search key={'search'} />
+        </AuthRedirect>
+      )},
+      {path:'/genre',element:(
+        <AuthRedirect>
+          <Genres key={'genre'} />
+        </AuthRedirect>
+      )},
+      {path:'/content',element:(
+        <AuthRedirect>
+          <GenreContent key={'genreContent'} />
         </AuthRedirect>
       )},
     ]
