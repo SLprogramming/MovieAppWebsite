@@ -83,15 +83,15 @@ const Detail = () => {
   }, [premiumIn]);
 
   useEffect(() => {
-    let data = (content.id || 0).toString();
+    let data = (content.id || 0);
    
-      setBookmarkContents(user?.bookmark as SpecialContentsType[]);
+      setBookmarkContents((user?.bookmark as SpecialContentsType[]) ?? []);
    
     // console.log(bookmarkContents, data, bookmarkContents.includes(data));
     
     
 
-      setIsBookmark(bookmarkContents.includes({type:contentType,id:parseInt(data)}));
+      setIsBookmark(bookmarkContents.includes({type:contentType,id:data}));
     
   }, [bookmarkContents, content,contentType]);
 

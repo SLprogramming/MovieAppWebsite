@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <div  className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex">
       {/* Desktop Sidebar */}
-      <div className="w-[170px] hidden md:block">
+      <div className="w-[170px] hidden md:block ">
         <SideNav premiumDay={premiumDay} />
       </div>
 
@@ -38,7 +38,7 @@ const Home = () => {
         <div className=" w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:hidden">
           <button
             onClick={() => setOpen(true)}
-            className="md:hidden p-2  bg-[var(--primary-bg)] rounded-xl"
+            className="block md:hidden p-2  bg-[var(--primary-bg)] rounded-xl"
           >
             <Menu size={20} />
           </button>
