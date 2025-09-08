@@ -65,7 +65,7 @@ interface ContentState {
     data: MovieContentType[];
     similar: MovieSimilar[];
     genre:GenreType[];
-    genreContents:MovieContentType[];
+    
     
   
     
@@ -75,7 +75,7 @@ interface ContentState {
     data: TVContentType[];
     similar: TVSimilar[];
     genre:GenreType[];
-    genreContents:TVContentType[];
+    
   
     
   };
@@ -87,6 +87,7 @@ interface ContentState {
   // ) => Promise<any>;
   searchContent:(payload:{keyword:string,page:number}) => Promise<any>;
   fetchGenres : () => Promise<void>  
+  fetchByGenres : ({type,id,page}:{type:'movie' | 'tv' ,id:string,page:number}) => Promise<any>  
   // addSpecialContent:(payload:AddSpecialContentProp) => void
   // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
   // setSpecialContent:(data :SetSpecialContentProp ) => void
@@ -106,16 +107,14 @@ export const useContentStore = create<ContentState>((set, get) => ({
     data: [],
     similar: [],
     genre: [],
-    genreContents: [],
-  
-   
+    
   },
   tv: {
     page: 1,
     data: [],
     similar: [],
     genre: [],
-     genreContents: [],
+    
    
   
   },
@@ -255,6 +254,14 @@ export const useContentStore = create<ContentState>((set, get) => ({
           }
         })
       }
+    } catch (error) {
+      
+    }
+  },
+  fetchByGenres:async ({type,id,page}) => {
+    try {
+      let res =await api.get(`content/genre-filter/${page}?content=${type}&genre=${id}`)
+      return res.data
     } catch (error) {
       
     }
