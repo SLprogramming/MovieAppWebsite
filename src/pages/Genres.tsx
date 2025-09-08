@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import api from '../axios'
+import  { useEffect } from 'react'
+
 import { useContentStore } from '../store/content'
 import {useNavigate} from "react-router-dom"
 

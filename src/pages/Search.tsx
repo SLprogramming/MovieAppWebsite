@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import { useAuthStore } from "../store/user";
 import {
   useContentStore,
   type MovieContentType,
@@ -35,7 +34,7 @@ const SearchPage = () => {
       }
       try {
         setIsLoading(true);
-       let success =  await searchContent({ keyword: value, page: 1 });
+      await searchContent({ keyword: value, page: 1 });
        
         console.log("query run:", value);
       } catch (error) {
