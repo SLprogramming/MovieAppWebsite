@@ -51,6 +51,7 @@ const SearchPage = () => {
     setKeyword(searchKeyword)
     setContents(searchedContents)
   },[searchedContents])
+  
 
   return (
     <>
@@ -72,29 +73,32 @@ const SearchPage = () => {
         </div>
 
         {/* Results Container */}
-        <div className="w-full flex flex-wrap gap-4 scrollbar-hide pt-4">
           {isLoading ? (
-            <div className="w-full h-[500px] flex justify-center items-center">
+            <div className="w-full  h-[500px] flex justify-center items-center">
               <div className="w-12 h-12 border-4 border-[var(--secondary-bg)] border-t-[var(--text-highlight)] rounded-full animate-spin mb-4"></div>
             </div>
-          ) : (
-            contents.map((e) => {
-              return (
-                <div key={e.id}>
-                  <MovieCard
-                    content={"release_date" in e ? "movie" : "tv"}
-                    date={
-                      "release_date" in e ? e.release_date : e.first_air_date
-                    }
-                    id={e.id}
-                    poster={e.poster_path}
-                    title={"title" in e ? e.title : e.name}
-                  ></MovieCard>
-                </div>
-              );
-            })
+          ) : (<>
+                  <div className="w-full grid grid-cols-3 sm:grid-cols-4 md:flex  flex-wrap overflow-y-scroll gap-4 lg:gap-6 scrollbar-hide pt-3 relative">
+        {  contents.map((e) => {
+            return (
+              <div key={e.id}>
+                <MovieCard
+                  content={"release_date" in e ? "movie" : "tv"}
+                  date={
+                    "release_date" in e ? e.release_date : e.first_air_date
+                  }
+                  id={e.id}
+                  poster={e.poster_path}
+                  title={"title" in e ? e.title : e.name}
+                ></MovieCard>
+              </div>
+            );
+          })}
+</div>
+
+          </>
           )}
-        </div>
+        
       </div>
     </>
   );

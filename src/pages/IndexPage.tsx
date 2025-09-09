@@ -1,19 +1,19 @@
 import SideNav from "../components/SideNav";
 import MobileSideNav from "../components/MobileSideNav";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useAuthStore } from "../store/user";
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
+import { useContentStore } from "../store/content";
 
 const Home = () => {
-  const { user,premiumIn } = useAuthStore();
-   const [open, setOpen] = useState<boolean>(false);
+  const { user, premiumIn } = useAuthStore();
+  const [open, setOpen] = useState<boolean>(false);
+  const {resetSearchKeyword} = useContentStore()
   const [premiumDay, setPremiumDay] = useState(10);
-
- 
+  const location = useLocation()
 
   useEffect(() => {
-  
     if (premiumIn) {
       // let premiumExpire = new Date(user?.premiumExpire).getTime()
       let premiumDay = Math.ceil(premiumIn / (1000 * 60 * 60 * 24));
@@ -22,9 +22,15 @@ const Home = () => {
     } else {
       setPremiumDay(0);
     }
-  }, [premiumIn,user]);
+  }, [premiumIn, user]);
+  useEffect(() => {
+   
+    if(location.pathname != '/search'){
+resetSearchKeyword()
+    }
+  },[location.pathname])
   return (
-    <div  className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex">
+    <div className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex">
       {/* Desktop Sidebar */}
       <div className="w-[170px] hidden md:block ">
         <SideNav premiumDay={premiumDay} />
@@ -34,11 +40,11 @@ const Home = () => {
       <MobileSideNav premiumDay={premiumDay} open={open} setOpen={setOpen} />
 
       {/* Main Content */}
-      <div className="flex-1 p-2 overflow-y-scroll ">
-        <div className=" w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:hidden">
+      <div className="flex-1 px-2 pb-2 overflow-y-scroll relative">
+        <div className="w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:hidden sticky top-0 z-10">
           <button
             onClick={() => setOpen(true)}
-            className="block md:hidden p-2  bg-[var(--primary-bg)] rounded-xl"
+            className="block md:hidden p-2 bg-[var(--primary-bg)] rounded-xl"
           >
             <Menu size={20} />
           </button>

@@ -7,7 +7,6 @@ import type {
   TVDetail,
 } from "../types/content";
 
-
 export interface MovieContentType {
   adult: boolean;
   backdrop_path: string;
@@ -27,8 +26,8 @@ export interface MovieContentType {
 }
 
 export interface GenreType {
-  id:number;
-  name:string;
+  id: number;
+  name: string;
 }
 
 export interface TVContentType {
@@ -49,6 +48,10 @@ export interface TVContentType {
   origin_country: string[];
 }
 
+type GenreContentType = {
+  movie: { title: string; id: number; data: MovieContentType[] }[];
+  tv: { title: string; id: number; data: TVContentType[] }[];
+};
 
 type ContentType = "movie" | "tv";
 
@@ -57,27 +60,20 @@ interface ContentState {
   isLoading: boolean;
   movieDetail: MovieDetail;
   tvDetail: TVDetail;
-  searchedContents:(MovieContentType | TVContentType)[] ;
-  searchKeyword:string;
-  
+  searchedContents: (MovieContentType | TVContentType)[];
+  searchKeyword: string;
+  genreContent: GenreContentType;
   movie: {
     page: number;
     data: MovieContentType[];
     similar: MovieSimilar[];
-    genre:GenreType[];
-    
-    
-  
-    
+    genre: GenreType[];
   };
   tv: {
     page: number;
     data: TVContentType[];
     similar: TVSimilar[];
-    genre:GenreType[];
-    
-  
-    
+    genre: GenreType[];
   };
   fetchContent: (contentType: ContentType) => Promise<void>;
   fetchContentDetail: (contentType: ContentType, id: string) => Promise<void>;
@@ -85,38 +81,45 @@ interface ContentState {
   //   data: string[],
   //   contentType: "movie" | "tv"
   // ) => Promise<any>;
-  searchContent:(payload:{keyword:string,page:number}) => Promise<any>;
-  fetchGenres : () => Promise<void>  
-  fetchByGenres : ({type,id,page}:{type:'movie' | 'tv' ,id:string,page:number}) => Promise<any>  
+  searchContent: (payload: { keyword: string; page: number }) => Promise<any>;
+  fetchGenres: () => Promise<void>;
+  fetchByGenres: ({
+    type,
+    id,
+    page,
+  }: {
+    type: "movie" | "tv";
+    id: string;
+    page: number;
+  }) => Promise<any>;
+  resetSearchKeyword:() => void
   // addSpecialContent:(payload:AddSpecialContentProp) => void
   // removeSpecailContent:(payload:RemoveSpecialContentProp) => void
   // setSpecialContent:(data :SetSpecialContentProp ) => void
-  
- 
 }
 
 export const useContentStore = create<ContentState>((set, get) => ({
   // castMembers: [],
-  searchKeyword:'',
-  searchedContents:[],
+  searchKeyword: "",
+  searchedContents: [],
   isLoading: true,
   movieDetail: {} as MovieDetail,
   tvDetail: {} as TVDetail,
+  genreContent: {
+    movie: [],
+    tv: [],
+  },
   movie: {
     page: 1,
     data: [],
     similar: [],
     genre: [],
-    
   },
   tv: {
     page: 1,
     data: [],
     similar: [],
     genre: [],
-    
-   
-  
   },
   fetchContent: async (contentType = "movie") => {
     let state = get();
@@ -215,58 +218,91 @@ export const useContentStore = create<ContentState>((set, get) => ({
   //     return resultData;
   //   } catch (error) {}
   // },
-  searchContent:async({keyword,page}) => {
+  searchContent: async ({ keyword, page }) => {
     try {
-      
-      let res = await api.get(`content/search/${page}?keyword=${keyword}`)
+      let res = await api.get(`content/search/${page}?keyword=${keyword}`);
       // console.log(res)
       // console.log(keyword,page)
       set((state) => {
         return {
           ...state,
-          searchedContents:res.data.data,
-          searchKeyword:keyword,
-        }
-      })
-      return res.data.success
+          searchedContents: res.data.data,
+          searchKeyword: keyword,
+        };
+      });
+      return res.data.success;
       // return res
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   },
-  fetchGenres:async () => {
+  fetchGenres: async () => {
     try {
+      const getState = get();
       
-      let movieRes = await api.get(`content/get-genres?content=movie`)
-      let tvRes = await api.get(`content/get-genres?content=tv`)
-      if(movieRes.data.success && tvRes.data.success){
-        set( state => {
-          return {
-            ...state,
-            movie:{
-              ...state.movie,
-              genre:movieRes.data.data
-            },
-            tv:{
-              ...state.tv,
-              genre:tvRes.data.data
+function getRandomItems<T>(arr: T[], count: number): T[] {
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+}
+      // fetch both genres in parallel
+      const [movieRes, tvRes] = await Promise.all([
+        api.get(`content/get-genres?content=movie`),
+        api.get(`content/get-genres?content=tv`),
+      ]);
+
+      if (movieRes.data.success && tvRes.data.success) {
+        const genresMap: Record<"movie" | "tv", GenreType[]> = {
+          movie: getRandomItems(movieRes.data.data,2),
+          tv: getRandomItems(tvRes.data.data,2),
+        };
+
+        (Object.entries(genresMap) as [ContentType, GenreType[]][]).forEach(
+          async ([type, genres]) => {
+            const results: { title: string; data: any[] ,id:number}[] = [];
+
+            for (const { id, name } of genres) {
+              const res = await getState.fetchByGenres({
+                type,
+                id: id.toString(),
+                page: 1,
+              });
+
+              if (res?.success) {
+                results.push({ title: name, data: res.data ,id:id });
+              }
             }
+
+            // update only once per type, no duplicates
+            set((state) => ({
+              ...state,
+              genreContent: {
+                ...state.genreContent,
+                [type]: results,
+              },
+            }));
           }
-        })
+        );
+
+        set((state) => ({
+          ...state,
+          movie: { ...state.movie, genre: movieRes.data.data },
+          tv: { ...state.tv, genre: tvRes.data.data },
+        }));
       }
     } catch (error) {
-      
+      console.error(error);
     }
   },
-  fetchByGenres:async ({type,id,page}) => {
-    try {
-      let res =await api.get(`content/genre-filter/${page}?content=${type}&genre=${id}`)
-      return res.data
-    } catch (error) {
-      
-    }
-  }
 
+  fetchByGenres: async ({ type, id, page }) => {
+    try {
+      let res = await api.get(
+        `content/genre-filter/${page}?content=${type}&genre=${id}`
+      );
+      return res.data;
+    } catch (error) {}
+  },
+  resetSearchKeyword:() => {
+    const state = get()
+    set({...state,searchKeyword:'',searchedContents:[]})
+  }
 
   //   setToken: (token) => set({ accessToken: token }),
 }));

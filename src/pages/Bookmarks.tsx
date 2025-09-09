@@ -67,7 +67,7 @@ let userContent: SpecialContentsType[] = (user?.[contentType as keyof User] as S
           <h1 className="text-[var(--text-highlight)] mt-2  font-bold text-md capitalize">
             {contentType}
           </h1>
-          <div className="w-full  flex flex-wrap gap-3  py-4 pt-2 md:pt-4">
+          <div className="w-full grid grid-cols-3 sm:grid-cols-4 md:flex  flex-wrap overflow-y-scroll gap-4 lg:gap-6 scrollbar-hide pt-3">
             {[...contents].reverse().map((e, index) => {
               return (
                 <MovieCard
