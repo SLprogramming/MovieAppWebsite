@@ -6,6 +6,8 @@ import { ToastContainer } from 'react-toastify';
 import { useTrackRoute } from './hooks/useTrackRoute';
 import OverallLoading from './pages/OverallLoading';
 import { useContentStore } from './store/content';
+import { usePurchaseStore } from './store/purchase';
+import { useUserPurchaseRequests } from './socket';
 
 function AppRoutes() {
   useTrackRoute(); // ✅ now it works because it's inside <BrowserRouter>
@@ -13,15 +15,21 @@ function AppRoutes() {
 }
 
 function App() {
-  const { fetchMe, isChecking, ActivationTimer } = useAuthStore();
+  const { fetchMe, isChecking, ActivationTimer,user } = useAuthStore();
    const {fetchGenres} = useContentStore()
-    
+    const {fetchPlans,fetchPlatforms} = usePurchaseStore()
   
+    useUserPurchaseRequests(user?._id as string,() => console.log('new'),() => console.log('changes'))
 
   useEffect(() => {
     fetchMe();
     fetchGenres()
      ActivationTimer();
+  
+      fetchPlans();
+    
+   
+      fetchPlatforms();
    
   }, []);
  

@@ -10,6 +10,8 @@ import Bookmarks from "./pages/Bookmarks";
 import Search from "./pages/Search";
 import Genres from "./pages/Genres";
 import GenreContent from "./pages/GenreContent";
+import BuyVip from "./pages/BuyVip";
+import Profile from "./pages/Profile";
 
 
 export const routes: RouteObject[] = [
@@ -58,6 +60,16 @@ export const routes: RouteObject[] = [
       {path:'/content',element:(
         <AuthRedirect>
           <GenreContent key={'genreContent'} />
+        </AuthRedirect>
+      )},
+      {path:'/purchase',element:(
+        <AuthRedirect>
+          <BuyVip key={'buyvip'} />
+        </AuthRedirect>
+      )},
+      {path:'/profile',element:(
+        <AuthRedirect>
+          <Profile key={'profile'} />
         </AuthRedirect>
       )},
     ]

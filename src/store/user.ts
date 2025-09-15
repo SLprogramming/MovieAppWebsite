@@ -219,7 +219,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             user: {
               ...state.user,
               [type]: state.user[type].filter(
-                (item) => item.toString() !== id.toString()
+                (item) => !(item.id == id && item.type == flag)
               ),
             },
         

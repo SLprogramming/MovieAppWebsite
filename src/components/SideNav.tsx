@@ -43,12 +43,12 @@ const navItems = [
     {
         title:"Buy VIP",
         icon:<CircleDollarSign />,
-        url:"#"
+        url:"/purchase"
     },
     {
         title:"Profile",
         icon:<SquareUser />,
-        url:"#"
+        url:"/profile"
     },
     {
         title:"Genre",

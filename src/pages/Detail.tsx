@@ -114,7 +114,7 @@ const Detail = () => {
       </div>
 
       {/* Foreground content */}
-      <div className="relative z-10 py-5 px-7">
+      <div className="relative z-10 py-5 px-7 h-full w-full">
         <div className="flex">
           <div
             className="p-3 bg-[var(--secondary-bg)] rounded-full hover:opacity-85"
