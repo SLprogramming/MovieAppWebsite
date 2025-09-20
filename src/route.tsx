@@ -12,6 +12,7 @@ import Genres from "./pages/Genres";
 import GenreContent from "./pages/GenreContent";
 import BuyVip from "./pages/BuyVip";
 import Profile from "./pages/Profile";
+import Setting from "./pages/Setting";
 
 
 export const routes: RouteObject[] = [
@@ -70,6 +71,11 @@ export const routes: RouteObject[] = [
       {path:'/profile',element:(
         <AuthRedirect>
           <Profile key={'profile'} />
+        </AuthRedirect>
+      )},
+      {path:'/setting',element:(
+        <AuthRedirect>
+          <Setting key={'setting'} />
         </AuthRedirect>
       )},
     ]

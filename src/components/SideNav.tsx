@@ -58,7 +58,7 @@ const navItems = [
     {
         title:"Setting",
         icon:<Settings />,
-        url:"#"
+        url:"/setting"
     },
 ]
 

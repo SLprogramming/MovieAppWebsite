@@ -61,6 +61,7 @@ interface AuthState {
     id: number;
     isAdd: boolean;
   }) => Promise<any>;
+  removeSession:({sessionId}:{sessionId:string}) => Promise<any>;
   activateAccount: (
     {
       activation_token,
@@ -256,6 +257,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.error("Failed to update content list", error);
     } finally {
       // console.log(useContentStore.getState())
+    }
+  },
+  removeSession:async({sessionId}) => {
+    try {
+      let res = await api.post('/user/remove/session',{sessionId})
+      return res
+    } catch (error) {
+        return error
     }
   },
   fetchSpecialContent: async ({ key }) => {

@@ -31,16 +31,36 @@ const Login = () => {
   const [registerFormInput, setRegisterFormInput] = useState(initialRegisterForm);
   const [showPassword, setShowPassword] = useState(false);
   const [tab, setTab] = useState<"login" | "register">("login");
+const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    if(!loginFormInput.email.trim() || !loginFormInput.password.trim()) return
-    authStore.login(loginFormInput)
+const handleLogin = async () => {
+  if (!loginFormInput.email.trim() || !loginFormInput.password.trim()) return;
+  if (submitting) return; // prevent double click
+
+  setSubmitting(true);
+  try {
+    await authStore.login(loginFormInput);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setSubmitting(false);
   }
-  const handleRegister = () => {
-    // console.log('hello')
-    if(!registerFormInput.email.trim() || !registerFormInput.name.trim() || !registerFormInput.password.trim() ) return
-    authStore.register(registerFormInput)
+};
+
+const handleRegister = async () => {
+  if (!registerFormInput.email.trim() || !registerFormInput.name.trim() || !registerFormInput.password.trim()) return;
+  if (submitting) return; // prevent double click
+
+  setSubmitting(true);
+  try {
+    await authStore.register(registerFormInput);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setSubmitting(false);
   }
+};
+
 
   return (
     <div className="bg-[var(--primary-bg)] w-full h-[100vh] text-[var(--text)] flex justify-center items-start px-2">

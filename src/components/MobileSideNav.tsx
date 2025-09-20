@@ -17,7 +17,7 @@ const navItems = [
   { title:"Profile", icon:<SquareUser />, url:"/profile"},
   { title:"Genre", icon:<Shapes />, url:"/genre"},
   // { title:"Tags", icon:<Hash />, url:"#"},
-  { title:"Setting", icon:<Settings />, url:"#"},
+  { title:"Setting", icon:<Settings />, url:"/setting"},
 ];
 
 const MobileSideNav = ({ premiumDay, open, setOpen }: {

@@ -28,7 +28,7 @@ useEffect(() => {
    console.log(genreContent)
 },[genreContent])
   if(contentStore.isLoading){
-    return (<IndexSkeleton titles={['Movies','Tv']}/>)
+    return (<IndexSkeleton titles={['Movies','Tv' , '' , '']}/>)
   }
   return (
   
@@ -69,7 +69,7 @@ useEffect(() => {
       see more
       </div>
     </div>
-   {genreContent.movie.map(({title,data,id},index) => {
+   {genreContent.movie.length > 0 ? genreContent.movie.map(({title,data,id},index) => {
     return(
       
       <div key={`${index}-${title}`}>
@@ -100,8 +100,8 @@ useEffect(() => {
       </div>
       
     )
-   })}
-   {genreContent.tv.map(({title,data,id},index) => {
+   }) : (<IndexSkeleton titles={[ '' , '']}/>)}
+   {genreContent.tv.length > 0 ? genreContent.tv.map(({title,data,id},index) => {
     return(
       
       <div key={`${index}-${title}`}>
@@ -132,7 +132,7 @@ useEffect(() => {
       </div>
       
     )
-   })}
+   }) :  (<IndexSkeleton titles={[ '' , '']}/>)}
     
   
    

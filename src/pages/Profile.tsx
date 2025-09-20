@@ -62,7 +62,7 @@ useEffect(() => {
         {/* Plan */}
         <div className="flex items-center gap-2 bg-gray-700 text-green-400 px-4 py-3 rounded border border-gray-600">
           <CreditCard size={18} />
-          <span> { Math.min(0,Math.ceil(premiumIn / (1000 * 60 * 60 * 24)))} Days</span>
+          <span> { Math.max(0,Math.ceil(premiumIn / (1000 * 60 * 60 * 24)))} Days</span>
         </div>
 
         {/* Payment History */}
