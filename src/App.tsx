@@ -17,12 +17,19 @@ function AppRoutes() {
 function App() {
   const { fetchMe, isChecking, ActivationTimer,user } = useAuthStore();
    const {fetchGenres} = useContentStore()
-    const {fetchPlans,fetchPlatforms} = usePurchaseStore()
-  
-    useUserPurchaseRequests(user?._id as string,() => console.log('new'),() => console.log('changes'))
+    const {fetchPlans,fetchPlatforms,fetchPurchaseRequest} = usePurchaseStore()
 
+    
+    useUserPurchaseRequests(user?._id || null,() => console.log('new'),(e) => {
+      console.log(e)
+      if(e=='inquiry'){
+        fetchMe({checking:false})
+        fetchPurchaseRequest(user?._id as string)
+      }
+    })
+    
   useEffect(() => {
-    fetchMe();
+    fetchMe({checking:true});
     fetchGenres()
      ActivationTimer();
   

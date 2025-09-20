@@ -43,8 +43,8 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-[var(--primary-bg)] w-full h-[100vh] text-[var(--text)] flex justify-center items-start">
-      <div className="p-8 w-[400px] flex flex-col gap-6 bg-[var(--secondary-bg)] rounded-2xl shadow-lg mt-[140px]">
+    <div className="bg-[var(--primary-bg)] w-full h-[100vh] text-[var(--text)] flex justify-center items-start px-2">
+      <div className="p-8 w-[400px] flex flex-col gap-6 bg-[var(--secondary-bg)] rounded-2xl shadow-lg mt-[140px] ">
 
         {/* Toggle Tabs */}
         <div className="flex justify-center gap-6 mb-4">

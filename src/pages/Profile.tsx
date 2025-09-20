@@ -38,7 +38,7 @@ useEffect(() => {
 },[paymentPlatforms])
  return (
     < >
-        {selectedTab == 'profile' &&(<div className="h-[95vh] flex flex-col items-center justify-start bg-gray-800 py-[100px] px-[30px]">
+        {selectedTab == 'profile' &&(<div className="h-[95vh] flex flex-col items-center justify-start py-[100px] px-[30px]">
 
       <div className="w-full  md:w-md space-y-2">
         {/* Email */}
@@ -56,13 +56,13 @@ useEffect(() => {
         {/* Expiry Date */}
         <div className="flex items-center gap-2 bg-gray-700 text-gray-200 px-4 py-3 rounded border border-gray-600">
           <Calendar size={18} />
-          <span>{user?.premiumExpire}</span>
+          <span>{user?.premiumExpire ?? '-'}</span>
         </div>
 
         {/* Plan */}
         <div className="flex items-center gap-2 bg-gray-700 text-green-400 px-4 py-3 rounded border border-gray-600">
           <CreditCard size={18} />
-          <span> { Math.ceil(premiumIn / (1000 * 60 * 60 * 24))} Days</span>
+          <span> { Math.min(0,Math.ceil(premiumIn / (1000 * 60 * 60 * 24)))} Days</span>
         </div>
 
         {/* Payment History */}
@@ -88,7 +88,7 @@ useEffect(() => {
       </div>
 
       {/* List */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 ">
         {purchaseHistory.map((p) => (
           <div
             key={p._id}
@@ -103,9 +103,9 @@ useEffect(() => {
               />
 
               {/* Payment Details */}
-              <div>
+              <div className="text-sm">
                 <p className="text-sm text-gray-400">
-                  Transaction No/ID: <span className="text-white">{p.transitionNumber}</span>
+                  Transaction No: <span className="text-white">{p.transitionNumber}</span>
                 </p>
                 <p className="text-green-500 font-semibold">{p?.plan_id?.name}</p>
                 <p className="text-white">{p?.plan_id?.price}</p>
@@ -115,7 +115,7 @@ useEffect(() => {
 
             {/* Status */}
             <span
-              className={`font-medium ${
+              className={`font-sm text-sm ${
                 p?.status === "approved"
                   ? "text-green-500"
                   : p.status === "pending"

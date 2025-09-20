@@ -1,5 +1,7 @@
 import axios, { AxiosError } from "axios";
 import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios"
+import { toast } from 'react-toastify';
+
 
 const api: AxiosInstance = axios.create({
   // baseURL: "https://movieappbackend-lc3u.onrender.com/api/",
@@ -32,7 +34,9 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
-
+    if(error.response?.status === 406){
+      toast.error('device limit is full!')
+    }
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

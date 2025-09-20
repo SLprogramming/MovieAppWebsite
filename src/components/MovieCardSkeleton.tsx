@@ -3,7 +3,7 @@ const MovieCardSkeleton = () => {
     <div className="group shrink-1 md:shrink-0 min-w-[100px] sm:min-w-[140px] md:w-[260px] lg:w-[260px] cursor-pointer">
       {/* Poster Box */}
       <div className="bg-[var(--secondary-bg)] rounded-[10px] overflow-hidden shadow-sm transform transition-transform duration-200">
-        <div className="overflow-hidden relative w-full min-h-[140px] max-h-[270px] sm:min-h-[210px] sm:max-h-[270px] md:min-h-[380px] lg:min-h-[430px]">
+        <div className="overflow-hidden relative w-full min-h-[160px] max-h-[300px] sm:min-h-[210px] sm:max-h-[270px] md:min-h-[380px] lg:min-h-[430px]">
           {/* Poster skeleton */}
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-md" />
         </div>

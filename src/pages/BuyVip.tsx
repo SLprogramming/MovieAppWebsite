@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../axios";
 import { usePurchaseStore, type PaymentAccount } from "../store/purchase";
 import SelectInput from "../components/customSelect";
-import { label } from "framer-motion/client";
+
 import { Copy } from "lucide-react";
 import { useAuthStore } from "../store/user";
 
@@ -59,8 +59,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text }) => {
 
 const BuyVip = () => {
   const {
-    fetchPlans,
-    fetchPlatforms,
+
     fetchAccounts,
     plans,
     paymentPlatforms,
@@ -133,7 +132,7 @@ const BuyVip = () => {
     }
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-2xl space-y-6 p-6 rounded-lg bg-gray-800 shadow-lg"

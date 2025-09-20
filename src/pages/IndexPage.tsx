@@ -10,13 +10,13 @@ const Home = () => {
   const { user, premiumIn } = useAuthStore();
   const [open, setOpen] = useState<boolean>(false);
   const {resetSearchKeyword} = useContentStore()
-  const [premiumDay, setPremiumDay] = useState(10);
+  const [premiumDay, setPremiumDay] = useState(0);
   const location = useLocation()
 
   useEffect(() => {
     if (premiumIn) {
       // let premiumExpire = new Date(user?.premiumExpire).getTime()
-      let premiumDay = Math.ceil(premiumIn / (1000 * 60 * 60 * 24));
+      let premiumDay = Math.max(0,Math.ceil(premiumIn / (1000 * 60 * 60 * 24)));
       // console.log(premiumIn)
       setPremiumDay(premiumDay);
     } else {
@@ -40,7 +40,7 @@ resetSearchKeyword()
       <MobileSideNav premiumDay={premiumDay} open={open} setOpen={setOpen} />
 
       {/* Main Content */}
-      <div className="flex-1 px-2 pb-2 overflow-y-scroll relative">
+      <div className="flex-1  pb-2 overflow-y-scroll relative">
         <div className="w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:hidden sticky top-0 z-10">
           <button
             onClick={() => setOpen(true)}

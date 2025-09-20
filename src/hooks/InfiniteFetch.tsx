@@ -26,7 +26,7 @@ export const useInfiniteFetch = ({ dataLength, fetchMore }: UseInfiniteFetchProp
       {
         root: null, // viewport
         rootMargin: "0px",
-        threshold: 0.8, // trigger when 50% of last item is visible
+        threshold: 0.6, // trigger when 50% of last item is visible
       }
     );
 

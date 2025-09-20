@@ -7,10 +7,15 @@ import type {
 import type { Dispatch, SetStateAction } from "react";
 import { type MovieContentType, type TVContentType } from "./content";
 
-
 export interface SpecialContentsType {
-  type:'movie' | 'tv',
-  id:number
+  type: "movie" | "tv";
+  id: number;
+}
+export interface UserSession {
+  _id: string; // MongoDB ObjectId as string
+  device: string; // user-agent or device info
+  token: string; // refresh token
+  createdAt: string; // ISO date string
 }
 export interface User {
   _id: string;
@@ -19,6 +24,7 @@ export interface User {
   premiumExpire: string; // ISO date string
   password: string;
   role: "user" | "admin"; // if you expect only these roles
+  sessions: UserSession[];
   isVerified: boolean;
   bookmark: SpecialContentsType[]; // or maybe Movie[] if you have a Movie type
   favorite: SpecialContentsType[];
@@ -42,7 +48,7 @@ interface AuthState {
   register: (payload: RegisterFormInputType) => Promise<void>;
   logout: () => Promise<void>;
   setToken: (token: string | null) => void;
-  fetchMe: () => Promise<void>;
+  fetchMe: ({ checking }: { checking: boolean }) => Promise<void>;
   ActivationTimer: () => void;
   contentListToggle: ({
     type,
@@ -62,7 +68,11 @@ interface AuthState {
     }: { activation_token: string; activation_code: string },
     setSuccess: Dispatch<SetStateAction<boolean>>
   ) => Promise<void>;
-  fetchSpecialContent:({key}:{key:'bookmark' | 'favorite' | 'recent'}) => Promise<void>
+  fetchSpecialContent: ({
+    key,
+  }: {
+    key: "bookmark" | "favorite" | "recent";
+  }) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -71,18 +81,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   activateToken: null,
   isChecking: true,
   premiumIn: 0,
-    bookmark: [],
-    favorite: [],
-    recent: [],
-
+  bookmark: [],
+  favorite: [],
+  recent: [],
 
   setToken: (token) => set({ accessToken: token }),
 
   login: async ({ email, password }) => {
-    const { data } = await api.post("auth/login", { email, password });
+    const { data, status } = await api.post("auth/login", { email, password });
+    console.log(status);
+
     let premiumExpire =
-          new Date(data?.user?.premiumExpire).getTime() - Date.now();
-    set({ user: data.user, accessToken: data.accessToken ,premiumIn:premiumExpire});
+      new Date(data?.user?.premiumExpire).getTime() - Date.now();
+    set({
+      user: data.user,
+      accessToken: data.accessToken,
+      premiumIn: premiumExpire,
+    });
   },
   register: async ({ name, email, password }) => {
     const { data } = await api.post("auth/register", { name, email, password });
@@ -132,26 +147,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     await api.get("/auth/logout");
-    set({ user: null, accessToken: null,premiumIn: 0,  bookmark: [],
-    favorite: [],
-    recent: [],
-  });
+    set({
+      user: null,
+      accessToken: null,
+      premiumIn: 0,
+      bookmark: [],
+      favorite: [],
+      recent: [],
+    });
   },
 
-  fetchMe: async () => {
+  fetchMe: async ({ checking }) => {
     const state = get();
     // const {setSpecialContent} = useContentStore.getState()
-    set({ isChecking: true });
+    set({ isChecking: checking });
     try {
       const { data } = await api.get("/auth/info");
-   
+
       set({
         ...state,
         user: data.user,
-      
       });
 
-      
       if (data?.user?.premiumExpire) {
         let premiumExpire =
           new Date(data?.user?.premiumExpire).getTime() - Date.now();
@@ -167,13 +184,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   contentListToggle: async ({ type, flag, id, isAdd = true }) => {
     try {
-   
       const state = get();
 
       if (!state.user) return; // no logged-in user
-
-      
-   
 
       if (isAdd) {
         // Call API for adding
@@ -182,12 +195,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           flag,
           id,
         });
-        
-        let currentList = state[type].filter(e=>!(e.id ==id && ('release_date' in e ? 'movie' :'tv') === flag) )
-        
+
+        let currentList = state[type].filter(
+          (e) =>
+            !(e.id == id && ("release_date" in e ? "movie" : "tv") === flag)
+        );
+
         let updatedList = [...currentList, response.data.data];
         if (updatedList.length > 20 && type == "recent") {
-          
           updatedList = updatedList.slice(-20);
           console.log("updatedlist", updatedList);
         }
@@ -196,11 +211,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           set({
             user: {
               ...state.user,
-              [type]: [...state.user[type].filter(e=> !(e.id == id && e.type == flag )),{type:flag , id}],
+              [type]: [
+                ...state.user[type].filter(
+                  (e) => !(e.id == id && e.type == flag)
+                ).slice(-19),
+                { type: flag, id },
+              ],
             },
-            
-              [type]: updatedList,
-            
+
+            [type]: updatedList,
           });
           // useContentStore.getState().addSpecialContent({content:flag , key:type ,data:response.data.data})
 
@@ -222,9 +241,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 (item) => !(item.id == id && item.type == flag)
               ),
             },
-        
-              [type]: state[type].filter((e) => e.id != id),
-            
+
+            [type]: state[type].filter((e) => e.id != id),
           });
           // removeSpecailContent({content:flag , key:type ,id})
           return { success: true, message: "bookmark remove successfully" };
@@ -240,25 +258,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // console.log(useContentStore.getState())
     }
   },
-  fetchSpecialContent:async({key}) => {
+  fetchSpecialContent: async ({ key }) => {
     try {
       // console.log('fetching special contetn')
-      const state = get()
-      
-      let url = `content/get/${key}`
-      let {data} =await api.get(url)
-      if(data.success){
-          set({
-        ...state,
-        
-       
-        [key]:data.data
-       
-      });
+      const state = get();
+
+      let url = `content/get/${key}`;
+      let { data } = await api.get(url);
+      if (data.success) {
+        set({
+          ...state,
+
+          [key]: data.data,
+        });
       }
       // console.log(key)
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  },
 }));

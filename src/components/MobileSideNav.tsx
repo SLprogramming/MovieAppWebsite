@@ -1,7 +1,8 @@
 // MobileSideNav.tsx
-import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes, Hash, Settings } from "lucide-react";
+import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes,  Settings, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthStore } from "../store/user";
 // import type { SideNavProp } from "../types/sidebar";
 
 const navItems = [
@@ -11,11 +12,11 @@ const navItems = [
   { title:"Series", icon:<Film />, url:"/serie" },
   { title:"Recent", icon:<ClockFading />, url:"/recent" },
   { title:"Bookmark", icon:<Bookmark />, url:"/bookmark" },
-  { title:"Favorite", icon:<BookHeart />, url:"#"},
+  { title:"Favorite", icon:<BookHeart />, url:"/favorite"},
   { title:"Buy VIP", icon:<CircleDollarSign />, url:"/purchase"},
   { title:"Profile", icon:<SquareUser />, url:"/profile"},
-  { title:"Genre", icon:<Shapes />, url:"#"},
-  { title:"Tags", icon:<Hash />, url:"#"},
+  { title:"Genre", icon:<Shapes />, url:"/genre"},
+  // { title:"Tags", icon:<Hash />, url:"#"},
   { title:"Setting", icon:<Settings />, url:"#"},
 ];
 
@@ -36,7 +37,7 @@ const MobileSideNav = ({ premiumDay, open, setOpen }: {
     navigate(url);
     setOpen(false); // close nav after click
   };
-
+  const {logout} = useAuthStore()
   return (
     <>
       {/* Overlay */}
@@ -83,6 +84,8 @@ const MobileSideNav = ({ premiumDay, open, setOpen }: {
               {e.title}
             </div>
           ))}
+              <button className='flex justify-start gap-4 w-full select-none cursor-pointer px-3 py-2 rounded-2xl font-bold' onClick={logout}><LogOut />logout</button>
+
         </div>
       </div>
     </>

@@ -3,9 +3,10 @@ import { io, type Socket } from "socket.io-client";
 
 // single socket instance
 const socket: Socket = io("http://192.168.110.131:8000");
+// const socket: Socket = io("https://movieappbackend-lc3u.onrender.com");
 
 export function useUserPurchaseRequests(
-  userId: string,
+  userId: string | null,
   onNewRequest: (data: any) => void,
   onChangeRequest: (data: any) => void
 ) {
@@ -14,6 +15,7 @@ export function useUserPurchaseRequests(
 
     // join user's room
     socket.emit("register", { userId, role: "user" });
+    // socket.emit("register", { role: "admin" });
 
     // register event listeners
     socket.on("purchaseRequest:new", onNewRequest);

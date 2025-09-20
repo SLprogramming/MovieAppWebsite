@@ -1,4 +1,4 @@
-import { BookHeart, Bookmark, CircleDollarSign, Clapperboard, ClockFading, Film, Hash, House, Search, Settings, Shapes, SquareUser } from 'lucide-react'
+import { BookHeart, Bookmark, CircleDollarSign, Clapperboard, ClockFading, Film,  House, LogOut, Search, Settings, Shapes, SquareUser } from 'lucide-react'
 import  { useEffect, useState } from 'react'
 import { useNavigate,useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/user'
@@ -38,7 +38,7 @@ const navItems = [
     {
         title:"Favorite",
         icon:<BookHeart />,
-        url:"#"
+        url:"/favorite"
     },
     {
         title:"Buy VIP",
@@ -54,11 +54,6 @@ const navItems = [
         title:"Genre",
         icon:<Shapes />,
         url:"/genre"
-    },
-    {
-        title:"Tags",
-        icon:<Hash />,
-        url:"#"
     },
     {
         title:"Setting",
@@ -83,7 +78,7 @@ const SideNav = ({premiumDay}:SideNavProp) => {
     <h2 className={`ps-5 py-2 ${premiumDay > 0 ? 'text-green-600' :'text-red-500'}`}>Premium - {premiumDay} day{premiumDay > 1 ? 's' :''}</h2>
     <div className=' w-full p-2 flex flex-col gap-2 justify-start items-start'>
         {navItems.map(e => (<div key={e.title} onClick={() => navigate(e.url)} className={`flex justify-start gap-4 w-full select-none cursor-pointer hover:text-[var(--text-highlight)] hover:scale-105 hover:translate-x-1 transition-all duration-200 px-3 py-2 rounded-2xl font-bold ${e.url == activeTab ? 'bg-[var(--secondary-bg)] scale-105 translate-x-1' : '' }`}>{e.icon}{e.title} </div>))}
-    <button className='flex justify-start gap-4 w-full select-none cursor-pointer px-3 py-2 rounded-2xl font-bold' onClick={logout}>logout</button>
+    <button className='flex justify-start gap-4 w-full select-none cursor-pointer px-3 py-2 rounded-2xl font-bold' onClick={logout}><LogOut />logout</button>
     </div>
     </>
   )
