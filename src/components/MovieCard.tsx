@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import defaultPoster from "../assets/default_img.png"; // fallback image
 import ConfirmBox from "./ConfirmBox";

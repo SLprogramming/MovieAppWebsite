@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, LogOut, Monitor, MonitorSmartphone, Power, RectangleEllipsis, Smartphone } from 'lucide-react'
+import { Calendar, ChevronLeft, LogOut, Monitor, MonitorSmartphone, Power, RectangleEllipsis } from 'lucide-react'
 import React, { useState } from 'react'
 import { useAuthStore, type User } from '../store/user'
 

@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 
 
 const api: AxiosInstance = axios.create({
-  // baseURL: "https://movieappbackend-lc3u.onrender.com/api/",
-  baseURL: "http://192.168.110.131:8000/api/",
+  baseURL: "https://movieappbackend-qcij.onrender.com/api/",
+  // baseURL: "http://192.168.110.131:8000/api/",
   timeout: 10000,
   withCredentials: true, // cookies included automatically
   headers: {
