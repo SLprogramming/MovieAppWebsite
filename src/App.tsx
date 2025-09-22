@@ -8,6 +8,7 @@ import OverallLoading from './pages/OverallLoading';
 import { useContentStore } from './store/content';
 import { usePurchaseStore } from './store/purchase';
 import { useUserPurchaseRequests } from './socket';
+import ConfirmBox from './components/ConfirmBox';
 
 function AppRoutes() {
   useTrackRoute(); // ✅ now it works because it's inside <BrowserRouter>
@@ -17,13 +18,13 @@ function AppRoutes() {
 function App() {
   const { fetchMe, isChecking, ActivationTimer,user } = useAuthStore();
    const {fetchGenres} = useContentStore()
-    const {fetchPlans,fetchPlatforms,fetchPurchaseRequest} = usePurchaseStore()
+    const {fetchPlatforms,fetchPurchaseRequest} = usePurchaseStore()
 
     
     useUserPurchaseRequests(user?._id || null,() => console.log('new'),(e) => {
       console.log(e)
+      fetchMe({checking:false})
       if(e=='inquiry'){
-        fetchMe({checking:false})
         fetchPurchaseRequest(user?._id as string)
       }
     })
@@ -33,7 +34,7 @@ function App() {
     fetchGenres()
      ActivationTimer();
   
-      fetchPlans();
+
     
    
       fetchPlatforms();
@@ -49,6 +50,7 @@ function App() {
 
   return (
     <>
+    <ConfirmBox/>
       <ToastContainer position="top-center" autoClose={2000} limit={1} />
       <BrowserRouter>
         <Suspense fallback={<div>loading</div>}>

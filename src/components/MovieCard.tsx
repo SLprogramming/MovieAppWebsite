@@ -2,6 +2,7 @@ import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import defaultPoster from "../assets/default_img.png"; // fallback image
 import ConfirmBox from "./ConfirmBox";
+import { useConfirmBoxStore } from "../store/confirmBoxStore";
 
 type MovieCardProp = {
   id: number;
@@ -18,24 +19,31 @@ const MovieCard = ({ content, id, poster, title, date ,needConfirm = false }: Mo
   const [imgSrc, setImgSrc] = useState(
     poster ? `https://image.tmdb.org/t/p/w500${poster}` : defaultPoster
   );
-const [boxOpen,setBoxOpen] = useState(false)
+  const {open} = useConfirmBoxStore();
 
   return (
     <div
       onClick={() => {
-        if(needConfirm){
-          setBoxOpen(true)
-        }else{
-          navigate(`/detail/${id}?content=${content}`)
-        }
+        console.log(needConfirm)
+          open({
+          title: "Delete item?",
+          message: "This action cannot be undone.",
+          functionOneText: "Cancel",
+          functionTwoText: "Yes, Delete",
+          destructive: true,
+          functionOne: () => console.log("1"),
+          // functionTwo: () => console.log("2"),
+        })
+          // navigate(`/detail/${id}?content=${content}`)
+        
       }}
       // onClick={() => navigate(`/detail/${id}?content=${content}`)}
       className="group shrink-1 md:shrink-0 min-w-[100px] sm:min-w-[140px] md:w-[260px] lg:w-[260px] cursor-pointer"
     >
-      {needConfirm  && <ConfirmBox isOpen={boxOpen} onClose={() => setBoxOpen(false)} onDelete={() => {
+      {/* {<ConfirmBox isOpen={boxOpen} onClose={() => setBoxOpen(false)} onDelete={() => {
       
         setBoxOpen(false)
-      }} onDetail={() => navigate(`/detail/${id}?content=${content}`)}/>}
+      }} onDetail={() => navigate(`/detail/${id}?content=${content}`)}/>} */}
       {/* Poster Box */}
       <div className="bg-[var(--secondary-bg)] rounded-[10px] overflow-hidden shadow-sm transform transition-transform duration-200 hover:scale-105">
         <div className="overflow-hidden relative w-full min-h-[140px] max-h-[270px] sm:min-h-[210px] sm:max-h-[270px] md:min-h-[380px] lg:min-h-[430px]">

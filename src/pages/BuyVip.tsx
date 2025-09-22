@@ -59,7 +59,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text }) => {
 
 const BuyVip = () => {
   const {
-
+fetchPlans,
     fetchAccounts,
     plans,
     paymentPlatforms,
@@ -82,7 +82,9 @@ const BuyVip = () => {
     }
   };
 
- 
+ useEffect(() => {
+fetchPlans();
+ },[])
 
   useEffect(() => {
     setSelectedPlatform(paymentPlatforms[0]?._id || "");

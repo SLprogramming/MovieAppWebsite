@@ -14,7 +14,7 @@ fetchMe: ({ checking }: {
 logout: () => Promise<void>
 }
 
-const loginDevices = ({setShowLoginDevice,user,removeSession,fetchMe,logout} : LoginDeviceProp) => {
+const loginDevices = ({setShowLoginDevice,user,removeSession,fetchMe} : LoginDeviceProp) => {
    
 function getShortDevice(ua:string) {
   const match = ua.match(/\(([^)]+)\)/); // take inside parentheses
@@ -27,17 +27,15 @@ function getShortDevice(ua:string) {
   return `${os} – ${model.split(" Build")[0]}`;
 }
 console.log(user?.sessions.filter(e => e.device == navigator.userAgent))
-const handleTerminate = async ({device,id}:{device:string,id:string}) => {
+const handleTerminate = async ({id}:{id:string}) => {
     try {
         
-        if(device == navigator.userAgent){
-            logout()
-        }else{
+       
            let res = await removeSession({sessionId:id})
            if(res.data.success){
             fetchMe({checking:false})
            }
-        }
+        
     } catch (error) {
         
     }
@@ -82,7 +80,7 @@ const handleTerminate = async ({device,id}:{device:string,id:string}) => {
 
           <hr className="my-2 sm:my-3 border-[var(--primary-bg)]" />
 
-          <button onClick={() => handleTerminate({device:device.device,id:device._id})} className="flex items-center gap-1 sm:gap-2 text-[var(--favorite)] font-medium hover:opacity-80 text-xs sm:text-sm">
+          <button onClick={() => handleTerminate({id:device._id})} className="flex items-center gap-1 sm:gap-2 text-[var(--favorite)] font-medium hover:opacity-80 text-xs sm:text-sm">
             <Power className="w-3 h-3 sm:w-4 sm:h-4" />
             Logout this device
           </button>

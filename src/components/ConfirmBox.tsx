@@ -1,19 +1,7 @@
+// ConfirmBox.tsx
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-
-export type ConfirmBoxProps = {
-  isOpen: boolean;
-  title?: string;
-  message?: React.ReactNode;
-  onClose: () => void;
-  onDetail: () => void;
-  onDelete: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  destructive?: boolean;
-  disableBackdropClick?: boolean;
-  ariaLabelledBy?: string;
-};
+import { useConfirmBoxStore } from "../store/confirmBoxStore";
 
 function ensurePortalRoot(): HTMLElement {
   const id = "confirmbox-portal-root";
@@ -26,20 +14,23 @@ function ensurePortalRoot(): HTMLElement {
   return el;
 }
 
-export default function ConfirmBox({
-  isOpen,
-  title = "Actions",
-  message = "",
-  onClose,
-  onDetail,
-  onDelete,
-  confirmText = "Detail",
-  cancelText = "Delete",
-  destructive = false,
-  disableBackdropClick = false,
-  ariaLabelledBy,
-}: ConfirmBoxProps) {
-  const portalRoot = (typeof document !== "undefined") ? ensurePortalRoot() : null;
+export default function ConfirmBox() {
+  const {
+    isOpen,
+    title,
+    message,
+    functionTwoText,
+    functionOneText,
+    destructive,
+    disableBackdropClick,
+    onClose,
+    functionOne, //  function one
+    functionTwo, // function two
+    close,
+  } = useConfirmBoxStore();
+
+  const portalRoot =
+    typeof document !== "undefined" ? ensurePortalRoot() : null;
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
 
@@ -51,7 +42,7 @@ export default function ConfirmBox({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
-        onClose();
+        close();
       }
     };
 
@@ -64,7 +55,7 @@ export default function ConfirmBox({
       document.body.style.overflow = originalOverflow;
       lastActiveElementRef.current?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, close]);
 
   if (!portalRoot || !isOpen) return null;
 
@@ -72,14 +63,13 @@ export default function ConfirmBox({
     <div
       role="dialog"
       aria-modal="true"
-      aria-labelledby={ariaLabelledBy}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
       <div
         className="fixed inset-0 bg-black/50"
         onMouseDown={(e) => {
           if (disableBackdropClick) return;
-          if (e.target === e.currentTarget) onClose();
+          if (e.target === e.currentTarget) close();
         }}
       />
 
@@ -95,7 +85,6 @@ export default function ConfirmBox({
       >
         <header className="mb-4">
           <h2
-            id={ariaLabelledBy}
             className="text-lg font-semibold text-center"
             style={{ color: "var(--text-highlight)" }}
           >
@@ -103,9 +92,7 @@ export default function ConfirmBox({
           </h2>
         </header>
 
-        <div className="mb-6 text-sm text-center">
-          {message}
-        </div>
+        <div className="mb-6 text-sm text-center">{message}</div>
 
         <footer className="flex items-center justify-center gap-3">
           <button
@@ -115,24 +102,31 @@ export default function ConfirmBox({
               backgroundColor: "var(--secondary-bg)",
               color: "var(--text)",
             }}
-            onClick={onDelete}
+            onClick={() => {
+              functionOne?.();
+              close();
+            }}
           >
-            {cancelText}
+            {functionOneText}
           </button>
 
-          <button
+          {functionTwo && <button
             type="button"
             className="px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1"
             style={{
-              backgroundColor: destructive ? "var(--favorite)" : "var(--primary)",
+              backgroundColor: destructive
+                ? "var(--favorite)"
+                : "var(--primary)",
               color: "var(--text-highlight)",
             }}
             onClick={() => {
-              onDetail();
+              functionTwo?.();
+              
+              close();
             }}
           >
-            {confirmText}
-          </button>
+            {functionTwoText}
+          </button>}
         </footer>
       </div>
     </div>,
