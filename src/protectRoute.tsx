@@ -13,10 +13,10 @@ type RouteProps = {
 
 export const AuthRedirect = ({ children } : RouteProps) => {
      const authStore = useAuthStore()
-     const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
-     if(activateToken){
-      return <Navigate to={"/activate"} replace />
-     }
+    //  const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
+    //  if(activateToken){
+    //   return <Navigate to={"/activate"} replace />
+    //  }
    if(!authStore.user && !authStore.isChecking){
      return <Navigate to={"/login"} replace />
    }
@@ -25,10 +25,10 @@ export const AuthRedirect = ({ children } : RouteProps) => {
 
 export const PublicOnlyRoute = ({ children }:RouteProps) => {
      const authStore = useAuthStore()
-        const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
-      if(activateToken){
-      return <Navigate to={"/activate"} replace />
-     }
+    //     const activateToken = localStorage.getItem('activateToken') || authStore.activateToken
+    //   if(activateToken){
+    //   return <Navigate to={"/activate"} replace />
+    //  }
      if(authStore.user && !authStore.isChecking){
      return <Navigate to={"/"} replace />
    }
@@ -43,4 +43,5 @@ export const ActivateRoute = ({ children }:RouteProps) => {
    
    return <>{children}</>;
 }
+
 

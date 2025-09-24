@@ -13,6 +13,7 @@ import GenreContent from "./pages/GenreContent";
 import BuyVip from "./pages/BuyVip";
 import Profile from "./pages/Profile";
 import Setting from "./pages/Setting";
+import ResetPassword from "./pages/ResetPassword";
 
 
 export const routes: RouteObject[] = [
@@ -89,6 +90,11 @@ export const routes: RouteObject[] = [
   {path:"/activate",element: (
     <ActivateRoute>
       <Activate/>
+    </ActivateRoute>
+  )},
+  {path:"/reset-password/:token",element: (
+    <ActivateRoute>
+      <ResetPassword/>
     </ActivateRoute>
   )},
    {path:'/detail/:id',element:(

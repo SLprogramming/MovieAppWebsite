@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import defaultPoster from "../assets/default_img.png"; // fallback image
 import ConfirmBox from "./ConfirmBox";
 import { useConfirmBoxStore } from "../store/confirmBoxStore";
+import { useAuthStore } from "../store/user";
+import api from "../axios";
+import { useContentStore } from "../store/content";
 
 type MovieCardProp = {
   id: number;
@@ -15,6 +18,8 @@ type MovieCardProp = {
 
 const MovieCard = ({ content, id, poster, title, date ,needConfirm = false }: MovieCardProp) => {
   const navigate = useNavigate();
+  const {fetchMe,contentListToggle} = useAuthStore()
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     poster ? `https://image.tmdb.org/t/p/w500${poster}` : defaultPoster
@@ -24,17 +29,37 @@ const MovieCard = ({ content, id, poster, title, date ,needConfirm = false }: Mo
   return (
     <div
       onClick={() => {
-        console.log(needConfirm)
-          open({
-          title: "Delete item?",
-          message: "This action cannot be undone.",
-          functionOneText: "Cancel",
-          functionTwoText: "Yes, Delete",
-          destructive: true,
-          functionOne: () => console.log("1"),
-          // functionTwo: () => console.log("2"),
-        })
-          // navigate(`/detail/${id}?content=${content}`)
+      if(needConfirm){
+
+        open({
+        title: "Choose the actions",
+        // message: "Choose the actions",
+        functionOneText: "Detail",
+        functionTwoText: "Delete",
+        destructive: true,
+        functionOne:() =>   navigate(`/detail/${id}?content=${content}`),
+        functionTwo:  async () => {
+          try {
+            
+                    let data = await contentListToggle({
+                      type: "recent",
+                      flag: content,
+                      id: id,
+                      isAdd: false,
+                    });
+                    if(data.success){
+                      
+                    }
+          } catch (error) {
+            
+          }
+        
+        },
+      })
+      }else{
+
+        navigate(`/detail/${id}?content=${content}`)
+      }
         
       }}
       // onClick={() => navigate(`/detail/${id}?content=${content}`)}

@@ -28,6 +28,8 @@ export default function ConfirmBox() {
     functionTwo, // function two
     close,
   } = useConfirmBoxStore();
+const [loadingOne, setLoadingOne] = React.useState(false);
+const [loadingTwo, setLoadingTwo] = React.useState(false);
 
   const portalRoot =
     typeof document !== "undefined" ? ensurePortalRoot() : null;
@@ -95,38 +97,55 @@ export default function ConfirmBox() {
         <div className="mb-6 text-sm text-center">{message}</div>
 
         <footer className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{
-              backgroundColor: "var(--secondary-bg)",
-              color: "var(--text)",
-            }}
-            onClick={() => {
-              functionOne?.();
-              close();
-            }}
-          >
-            {functionOneText}
-          </button>
+         <button
+  type="button"
+  disabled={loadingOne}
+  className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+  style={{
+    backgroundColor: "var(--secondary-bg)",
+    color: "var(--text)",
+  }}
+  onClick={async () => {
+    if (!functionOne) return;
+    try {
+      setLoadingOne(true);
+      await functionOne(); // wait for async
+      close();
+    } finally {
+      setLoadingOne(false);
+    }
+  }}
+>
+  {loadingOne ? "Loading..." : functionOneText}
+</button>
 
-          {functionTwo && <button
-            type="button"
-            className="px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1"
-            style={{
-              backgroundColor: destructive
-                ? "var(--favorite)"
-                : "var(--primary)",
-              color: "var(--text-highlight)",
-            }}
-            onClick={() => {
-              functionTwo?.();
-              
-              close();
-            }}
-          >
-            {functionTwoText}
-          </button>}
+
+      {functionTwo && (
+  <button
+    type="button"
+    disabled={loadingTwo}
+    className="px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-60 disabled:cursor-not-allowed"
+    style={{
+      backgroundColor: destructive
+        ? "var(--favorite)"
+        : "var(--primary)",
+      color: "var(--text-highlight)",
+    }}
+    onClick={async () => {
+      if (!functionTwo) return;
+      try {
+        setLoadingTwo(true);
+        await functionTwo(); // wait for async
+        close();
+      } finally {
+        setLoadingTwo(false);
+      }
+    }}
+  >
+    {loadingTwo ? "Loading..." : functionTwoText}
+  </button>
+)}
+
         </footer>
       </div>
     </div>,

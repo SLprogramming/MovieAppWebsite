@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios"
 import { toast } from 'react-toastify';
-
+import { useConfirmBoxStore } from "./store/confirmBoxStore";
 
 const api: AxiosInstance = axios.create({
   // baseURL: "https://movieappbackend-qcij.onrender.com/api/",
@@ -35,8 +35,18 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     if(error.response?.status === 406){
-      toast.error('device limit is full!')
+      // toast.error('device limit is full!')
+      useConfirmBoxStore.getState().open({
+        title:'device limit full!',
+        message:'Please logout from one device',
+        functionOne:() => {},
+        functionOneText:'okey'
+      })
     }
+
+   
+  
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

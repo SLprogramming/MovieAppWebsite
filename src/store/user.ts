@@ -44,8 +44,8 @@ interface AuthState {
   favorite: (MovieContentType | TVContentType)[];
   recent: (MovieContentType | TVContentType)[];
 
-  login: (payload: LoginFormInputType) => Promise<void>;
-  register: (payload: RegisterFormInputType) => Promise<void>;
+  login: (payload: LoginFormInputType) => Promise<any>;
+  register: (payload: RegisterFormInputType) => Promise<any>;
   logout: () => Promise<void>;
   setToken: (token: string | null) => void;
   fetchMe: ({ checking }: { checking: boolean }) => Promise<void>;
@@ -99,6 +99,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       accessToken: data.accessToken,
       premiumIn: premiumExpire,
     });
+    return data
   },
   register: async ({ name, email, password }) => {
     const { data } = await api.post("auth/register", { name, email, password });
@@ -106,6 +107,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     localStorage.setItem("activateExpireIn", data.expireIn);
     localStorage.setItem("activateToken", data.activationToken);
     // console.log(data);
+    return data
   },
   ActivationTimer: () => {
     let expireIn = localStorage.getItem("activateExpireIn") as string;

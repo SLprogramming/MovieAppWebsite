@@ -1,9 +1,11 @@
 import { Calendar, ChevronLeft, LogOut, Monitor, MonitorSmartphone, Power, RectangleEllipsis } from 'lucide-react'
 import React, { useState } from 'react'
 import { useAuthStore, type User } from '../store/user'
+import { useConfirmBoxStore } from '../store/confirmBoxStore';
+import ChangePassword from '../components/ChangePassword';
 
 type LoginDeviceProp = {
-    setShowLoginDevice:React.Dispatch<React.SetStateAction<boolean>>,
+    setSelectedTab:React.Dispatch<React.SetStateAction<('setting' | 'changePassword' | 'loginDevice')>>,
     user:User | null,
     removeSession: ({ sessionId }: {
     sessionId: string;
@@ -14,7 +16,7 @@ fetchMe: ({ checking }: {
 logout: () => Promise<void>
 }
 
-const loginDevices = ({setShowLoginDevice,user,removeSession,fetchMe} : LoginDeviceProp) => {
+const loginDevices = ({setSelectedTab,user,removeSession,fetchMe} : LoginDeviceProp) => {
    
 function getShortDevice(ua:string) {
   const match = ua.match(/\(([^)]+)\)/); // take inside parentheses
@@ -26,7 +28,8 @@ function getShortDevice(ua:string) {
 
   return `${os} – ${model.split(" Build")[0]}`;
 }
-console.log(user?.sessions.filter(e => e.device == navigator.userAgent))
+
+
 const handleTerminate = async ({id}:{id:string}) => {
     try {
         
@@ -46,7 +49,7 @@ const handleTerminate = async ({id}:{id:string}) => {
   <div className="flex scale-90 sm:scale-100 absolute left-4 sm:left-5 top-4 sm:top-6">
     <div
       className="p-3 bg-[var(--secondary-bg)] rounded-full hover:opacity-85 cursor-pointer"
-      onClick={() => setShowLoginDevice(false)}
+      onClick={() => setSelectedTab('setting')}
     >
       <ChevronLeft className="text-[var(--text-highlight)]" />
     </div>
@@ -96,19 +99,36 @@ const handleTerminate = async ({id}:{id:string}) => {
 
 const Setting = () => {
  const {user,removeSession,fetchMe,logout} = useAuthStore()
-    const [showLoginDevice,setShowLoginDevice] = useState(false)
+ const [selectedTab,setSelectedTab] = useState<'setting' | 'changePassword' | 'loginDevice'>('setting')
     
+    const openConfirmBox = useConfirmBoxStore( state => state.open)
 
-if(showLoginDevice){
-    return loginDevices({setShowLoginDevice,user,removeSession,fetchMe,logout})
+    const handleLogout =() => {
+      openConfirmBox({
+        destructive:true,
+        title:"Are You Sure!",
+        functionTwo:logout,
+        functionTwoText:'Logout',
+        functionOneText:'Calcel',
+        functionOne:() => console.log('click')
+       
+      })
+    }
+
+if(selectedTab == 'loginDevice'){
+    return loginDevices({setSelectedTab,user,removeSession,fetchMe,logout})
 }
+if(selectedTab == 'changePassword'){
+  return <ChangePassword setSelectedTab={setSelectedTab}/>
+}
+
 
   return (
     <div className='flex p-3 flex-col justify-start items-center h-full gap-5 w-full md:w-4/5 mx-auto'>
         <h1 className='text-center text-[var(--text-highlight)] w-full my-2'>Setting</h1>
-        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm' onClick={() => setShowLoginDevice(true)}> <MonitorSmartphone /> <div>Login Devices</div></div>
-        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm'> <RectangleEllipsis /> <div>Change Password</div></div>
-        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm'><LogOut /> <div>Logout</div></div>
+        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm cursor-pointer select-none' onClick={() => setSelectedTab('loginDevice')}> <MonitorSmartphone /> <div>Login Devices</div></div>
+        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm cursor-pointer select-none' onClick={() => setSelectedTab('changePassword')}> <RectangleEllipsis /> <div>Change Password</div></div>
+        <div className='bg-[var(--secondary-bg)] px-3 py-2 w-full flex gap-2 rounded-sm cursor-pointer select-none' onClick={handleLogout}><LogOut /> <div>Logout</div></div>
     </div>
   )
 }

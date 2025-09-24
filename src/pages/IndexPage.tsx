@@ -32,7 +32,7 @@ resetSearchKeyword()
   return (
     <div className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex">
       {/* Desktop Sidebar */}
-      <div className="w-[170px] hidden md:block ">
+      <div className="w-[170px] hidden md:!block ">
         <SideNav premiumDay={premiumDay} />
       </div>
 
@@ -41,10 +41,10 @@ resetSearchKeyword()
 
       {/* Main Content */}
       <div className="flex-1  pb-2 overflow-y-scroll relative">
-        <div className="w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:hidden sticky top-0 z-10">
+        <div className="w-full bg-[var(--secondary-bg)] py-1 px-2 flex items-center justify-between md:!hidden sticky top-0 z-10">
           <button
             onClick={() => setOpen(true)}
-            className="block md:hidden p-2 bg-[var(--primary-bg)] rounded-xl"
+            className="block md:!hidden p-2 bg-[var(--primary-bg)] rounded-xl"
           >
             <Menu size={20} />
           </button>

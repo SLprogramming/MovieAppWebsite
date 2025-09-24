@@ -66,17 +66,13 @@ useEffect(() => {
         </div>
 
         {/* Payment History */}
-        <div className="flex items-center gap-2 bg-gray-700 text-red-500 px-4 py-3 rounded border border-red-500" onClick={() => setSelectedTab('history')}>
+        <div className="flex items-center gap-2 bg-gray-700 text-[var(--primary)] px-4 py-3 rounded border border-[var(--primary)]" onClick={() => setSelectedTab('history')}>
           <Repeat size={18} />
           <span className="underline cursor-pointer">Payment history</span>
         </div>
       </div>
 
-      {/* Change Password Button */}
-      <button className="mt-6 px-4 py-2 border border-gray-400 text-gray-200 rounded flex items-center gap-2 hover:bg-gray-700">
-        <Lock size={16} />
-        Change Password
-      </button>
+ 
         </div>)}
         {selectedTab == "history" && ( <div className="min-h-screen bg-[#1c1d24] text-white p-4">
       {/* Header */}

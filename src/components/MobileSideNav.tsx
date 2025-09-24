@@ -1,8 +1,8 @@
 // MobileSideNav.tsx
-import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes,  Settings, LogOut } from "lucide-react";
+import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes,  Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuthStore } from "../store/user";
+// import { useAuthStore } from "../store/user";
 // import type { SideNavProp } from "../types/sidebar";
 
 const navItems = [
@@ -37,7 +37,7 @@ const MobileSideNav = ({ premiumDay, open, setOpen }: {
     navigate(url);
     setOpen(false); // close nav after click
   };
-  const {logout} = useAuthStore()
+  // const {logout} = useAuthStore()
   return (
     <>
       {/* Overlay */}
@@ -84,7 +84,7 @@ const MobileSideNav = ({ premiumDay, open, setOpen }: {
               {e.title}
             </div>
           ))}
-              <button className='flex justify-start gap-4 w-full select-none cursor-pointer px-3 py-2 rounded-2xl font-bold' onClick={logout}><LogOut />logout</button>
+              {/* <button className='flex justify-start gap-4 w-full select-none cursor-pointer px-3 py-2 rounded-2xl font-bold' onClick={logout}><LogOut />logout</button> */}
 
         </div>
       </div>
