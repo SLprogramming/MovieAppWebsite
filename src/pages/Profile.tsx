@@ -1,4 +1,4 @@
-import { User, Smile, Calendar, CreditCard, Repeat, Lock, ChevronLeft } from "lucide-react";
+import { User, Smile, Calendar, CreditCard, Repeat,  ChevronLeft } from "lucide-react";
 import { useAuthStore } from "../store/user";
 import { useEffect, useMemo, useState } from "react";
 ;

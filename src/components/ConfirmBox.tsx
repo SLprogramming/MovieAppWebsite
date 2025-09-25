@@ -23,7 +23,7 @@ export default function ConfirmBox() {
     functionOneText,
     destructive,
     disableBackdropClick,
-    onClose,
+    
     functionOne, //  function one
     functionTwo, // function two
     close,

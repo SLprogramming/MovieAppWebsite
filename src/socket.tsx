@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { io, type Socket } from "socket.io-client";
 
 // single socket instance
-const socket: Socket = io("http://192.168.110.131:8000");
-// const socket: Socket = io("https://movieappbackend-qcij.onrender.com");
+// const socket: Socket = io("http://192.168.110.131:8000");
+const socket: Socket = io("https://movieappbackend-qcij.onrender.com");
 
 export function useUserPurchaseRequests(
   userId: string | null,

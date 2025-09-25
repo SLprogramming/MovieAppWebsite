@@ -1,11 +1,10 @@
 import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import defaultPoster from "../assets/default_img.png"; // fallback image
-import ConfirmBox from "./ConfirmBox";
+
 import { useConfirmBoxStore } from "../store/confirmBoxStore";
 import { useAuthStore } from "../store/user";
-import api from "../axios";
-import { useContentStore } from "../store/content";
+
 
 type MovieCardProp = {
   id: number;
@@ -18,7 +17,7 @@ type MovieCardProp = {
 
 const MovieCard = ({ content, id, poster, title, date ,needConfirm = false }: MovieCardProp) => {
   const navigate = useNavigate();
-  const {fetchMe,contentListToggle} = useAuthStore()
+  const {contentListToggle} = useAuthStore()
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState(
