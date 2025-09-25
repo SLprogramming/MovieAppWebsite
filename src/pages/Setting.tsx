@@ -23,10 +23,10 @@ function getShortDevice(ua:string) {
   if (!match) return ua;
 
   const parts = match[1].split(";");
-  const os = parts[1]?.trim(); // Android 6.0
-  const model = parts[2]?.trim(); // Nexus 5 Build/MRA58N
+  const os = parts[0]?.trim(); // Android 6.0
+  const model = parts[1]?.trim(); // Nexus 5 Build/MRA58N
 
-  return `${os} – ${model.split(" Build")[0]}`;
+  return `${os} – ${model?.split(" Build")[0]}`;
 }
 
 
