@@ -3,7 +3,7 @@ import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios"
 import { useConfirmBoxStore } from "./store/confirmBoxStore";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "https://movieappbackend-qcij.onrender.com/api/",
+  baseURL: "https://movieappbackend-1odg.onrender.com/api/",
   // baseURL: "http://192.168.110.131:8000/api/",
   timeout: 10000,
   withCredentials: true, // cookies included automatically
