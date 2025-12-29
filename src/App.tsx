@@ -7,7 +7,7 @@ import { useTrackRoute } from './hooks/useTrackRoute';
 import OverallLoading from './pages/OverallLoading';
 import { useContentStore } from './store/content';
 import { usePurchaseStore } from './store/purchase';
-import { useUserPurchaseRequests } from './socket';
+import { useUserPurchaseRequests,useMessageSocket } from './socket';
 import ConfirmBox from './components/ConfirmBox';
 
 function AppRoutes() {
@@ -20,7 +20,7 @@ function App() {
    const {fetchGenres} = useContentStore()
     const {fetchPlatforms,fetchPurchaseRequest} = usePurchaseStore()
 
-    
+    useMessageSocket(user?._id || null )
     useUserPurchaseRequests(user?._id || null,() => console.log('new'),(e) => {
       console.log(e)
       fetchMe({checking:false})

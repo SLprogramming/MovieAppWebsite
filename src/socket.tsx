@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { io, type Socket } from "socket.io-client";
 
 // single socket instance
-const socket: Socket = io("http://192.168.110.134:8000");
+const socket: Socket = io(import.meta.env.VITE_API_BASE_URL);
+export const messageSocket: Socket = io(import.meta.env.VITE_SOCKET_MESSAGE_URL)
 // const socket: Socket = io("https://movieappbackend-1odg.onrender.com");
 
 export function useUserPurchaseRequests(
@@ -27,4 +28,19 @@ export function useUserPurchaseRequests(
       socket.off("overAll:change", onChangeRequest);
     };
   }, [userId, onNewRequest, onChangeRequest]);
+}
+
+export function useMessageSocket(
+  userId: string | null
+) {
+  useEffect(() => {
+    if (!userId) return;
+
+
+    messageSocket.emit("register", { userId, role: "user" });
+
+    return () => {
+    
+    };
+  }, [userId]);
 }

@@ -30,7 +30,7 @@ resetSearchKeyword()
     }
   },[location.pathname])
   return (
-    <div className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex">
+    <div className="w-full h-[100vh] bg-[var(--primary-bg)] text-[var(--text)] flex gap-2">
       {/* Desktop Sidebar */}
       <div className="w-[170px] hidden md:!block ">
         <SideNav premiumDay={premiumDay} />

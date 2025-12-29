@@ -1,5 +1,5 @@
 // MobileSideNav.tsx
-import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes,  Settings } from "lucide-react";
+import { X, Search, House, Clapperboard, Film, ClockFading, Bookmark, BookHeart, CircleDollarSign, SquareUser, Shapes,  Settings , Contact } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 // import { useAuthStore } from "../store/user";
@@ -16,6 +16,7 @@ const navItems = [
   { title:"Buy VIP", icon:<CircleDollarSign />, url:"/purchase"},
   { title:"Profile", icon:<SquareUser />, url:"/profile"},
   { title:"Genre", icon:<Shapes />, url:"/genre"},
+  {title:"Contact",icon:<Contact />,url:"/contact"},
   // { title:"Tags", icon:<Hash />, url:"#"},
   { title:"Setting", icon:<Settings />, url:"/setting"},
 ];

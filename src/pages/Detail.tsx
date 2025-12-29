@@ -641,7 +641,7 @@ useEffect(() => {
                     <h1 className="text-[.9rem]">Explore</h1>
                   </div>
                 </div>
-                <div>
+                <div className="overflow-x-hidden">
                  {mobileCurrentTab == 'review' &&  <div className="scale-90">
                    {content && <> <h1 className="text-[var(--text-highlight)] font-bold text-1xl">
                       {"title" in content ? content.title : content.name}

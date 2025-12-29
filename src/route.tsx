@@ -14,6 +14,7 @@ import BuyVip from "./pages/BuyVip";
 import Profile from "./pages/Profile";
 import Setting from "./pages/Setting";
 import ResetPassword from "./pages/ResetPassword";
+import CustomerService from "./pages/CustomerService";
 
 
 export const routes: RouteObject[] = [
@@ -72,6 +73,11 @@ export const routes: RouteObject[] = [
       {path:'/profile',element:(
         <AuthRedirect>
           <Profile key={'profile'} />
+        </AuthRedirect>
+      )},
+      {path:'/contact',element:(
+        <AuthRedirect>
+          <CustomerService key={'contact'} />
         </AuthRedirect>
       )},
       {path:'/setting',element:(

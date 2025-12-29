@@ -4,7 +4,7 @@ import { useConfirmBoxStore } from "./store/confirmBoxStore";
 
 const api: AxiosInstance = axios.create({
   // baseURL: "https://movieappbackend-1odg.onrender.com/api/",
-  baseURL: "http://192.168.110.134:8000/api/",
+  baseURL: import.meta.env.VITE_API_BASE_URL + "/api/",
   timeout: 10000,
   withCredentials: true, // cookies included automatically
   headers: {
