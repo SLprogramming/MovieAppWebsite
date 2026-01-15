@@ -2,16 +2,13 @@ import React, { useState, useEffect, useRef  , type ChangeEvent} from 'react';
 import { Send, User, Headset, Paperclip, Smile, MoreVertical, X, FileText } from 'lucide-react';
 import { messageSocket } from '../socket';
 import { useAuthStore } from '../store/user';
-interface Message {
-  id: number;
-  text?: string;
-  fileName?: string;
-  sender: 'user' | 'agent';
-  timestamp: string;
-}
+import { useMessageStore } from '../store/message';
+import { formatChatTime } from '../tools/helper';
+
 
 const CustomerServiceChat = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const {messages} = useMessageStore()
+
   const [inputValue, setInputValue] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
@@ -20,16 +17,15 @@ const CustomerServiceChat = () => {
   const authStore = useAuthStore()
 
  useEffect(() => {
+
   messageSocket.on('message:new',(data:any) => {
-    const newMessage: Message = {
-      id: Date.now(),
-      text: data.message,
-      // fileName: data.fileName,
-      sender: 'agent',
-      timestamp: data.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    console.log("New message received:",data)
+    
   })
+  messageSocket.on("conversation:new",(data:any) => {
+    console.log("New conversation started:",data)
+    // setMessages([])
+  });
  }, []);
 
  
@@ -52,7 +48,7 @@ const CustomerServiceChat = () => {
     e.preventDefault();
     if (!inputValue.trim() && !selectedFile) return;
     messageSocket.emit('message:new',{sender_id:authStore.user?._id, message:inputValue  })
-    const newMessage: Message = {
+    const newMessage = {
       id: Date.now(),
       text: inputValue || undefined,
       fileName: selectedFile?.name,
@@ -60,7 +56,7 @@ const CustomerServiceChat = () => {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages([...messages, newMessage]);
+    // setMessages([...messages, newMessage]);
     setInputValue('');
     setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -92,29 +88,29 @@ const CustomerServiceChat = () => {
       {/* --- Chat Messages --- */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`flex gap-3 max-w-[80%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+          <div key={msg._id} className={`flex ${msg?.sender_id?._id == authStore?.user?._id ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex gap-3 max-w-[80%] ${msg?.sender_id?._id == authStore?.user?._id ? 'flex-row-reverse' : 'flex-row'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 
-                ${msg.sender === 'user' ? 'bg-[var(--cyan)] text-black' : 'bg-gray-700 text-white'}`}>
-                {msg.sender === 'user' ? <User size={16} /> : <Headset size={16} />}
+                ${msg?.sender_id?._id == authStore?.user?._id ? 'bg-[var(--cyan)] text-black' : 'bg-gray-700 text-white'}`}>
+                {msg?.sender_id?._id == authStore?.user?._id ? <User size={16} /> : <Headset size={16} />}
               </div>
               
               <div className="flex flex-col gap-1">
                 <div className={`p-3 rounded-2xl text-sm ${
-                  msg.sender === 'user' 
+                  msg?.sender_id?._id == authStore?.user?._id 
                     ? 'bg-[var(--cyan)] text-black rounded-tr-none' 
                     : 'bg-[var(--primary-bg)] text-[var(--text)] rounded-tl-none border border-gray-800'
                 }`}>
-                  {msg.fileName && (
+                  {/* {msg.fileName && (
                     <div className="flex items-center gap-2 mb-1 p-2 bg-black/10 rounded-lg border border-black/5">
                       <FileText size={16} />
                       <span className="text-xs font-medium truncate max-w-[150px]">{msg.fileName}</span>
                     </div>
-                  )}
-                  {msg.text}
+                  )} */}
+                  {msg?.message }
                 </div>
-                <p className={`text-[10px] text-[var(--text)] opacity-50 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                  {msg.timestamp}
+                <p className={`text-[10px] text-[var(--text)] opacity-50 ${msg?.sender_id?._id == authStore?.user?._id ? 'text-right' : 'text-left'}`}>
+                  {formatChatTime(msg.createdAt)}
                 </p>
               </div>
             </div>
