@@ -1,3 +1,5 @@
+import type { IMessage } from "../store/message";
+
 export function formatChatTime(isoDate: string): string {
   const date = new Date(isoDate);
   const now = new Date();
@@ -40,4 +42,14 @@ export function formatChatTime(isoDate: string): string {
   // Years ago
   const diffYears = now.getFullYear() - date.getFullYear();
   return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
+}
+
+export const formatApiResponseMessage = (messages:IMessage[]) => {
+ return messages.map((item ) => ({
+        id:item?._id,
+        text:item?.message,
+        fileName:item?.file?.publicID || null,
+        sender_id:item?.sender_id?._id ,
+        timestamp:item?.createdAt
+      }))
 }

@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef  , type ChangeEvent} from 'react';
+import React, { useState, useEffect, useRef  , type ChangeEvent, useMemo} from 'react';
 import { Send, User, Headset, Paperclip, Smile, MoreVertical, X, FileText } from 'lucide-react';
 import { messageSocket } from '../socket';
 import { useAuthStore } from '../store/user';
-import { useMessageStore } from '../store/message';
+import { useMessageStore , type ChatMessage}   from '../store/message';
 import { formatChatTime } from '../tools/helper';
 
 
+
 const CustomerServiceChat = () => {
-  const {messages} = useMessageStore()
+  const {messages,conversations,fetchConversation,addMessage,fetchMessages} = useMessageStore()
 
   const [inputValue, setInputValue] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -15,6 +16,7 @@ const CustomerServiceChat = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const authStore = useAuthStore()
+
 
  useEffect(() => {
 
@@ -26,8 +28,20 @@ const CustomerServiceChat = () => {
     console.log("New conversation started:",data)
     // setMessages([])
   });
+    fetchConversation(authStore.user?._id || '')
+   
  }, []);
 
+ useEffect(() => {
+  
+     if(conversations.length > 0){
+     fetchMessages(conversations[0]?._id)
+  }
+  },[conversations]);
+
+
+
+ 
  
 
   // Auto-scroll to bottom
@@ -47,15 +61,15 @@ const CustomerServiceChat = () => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() && !selectedFile) return;
-    messageSocket.emit('message:new',{sender_id:authStore.user?._id, message:inputValue  })
+    messageSocket.emit('message:new',{sender_id:authStore.user?._id, message:inputValue ,conversation_id:conversations[0]?._id})
     const newMessage = {
-      id: Date.now(),
-      text: inputValue || undefined,
-      fileName: selectedFile?.name,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      id:null,
+      text: inputValue ,
+      fileName: selectedFile?.name || null,
+      sender_id: authStore.user?._id || '',
+      timestamp: new Date().toISOString(),
     };
-
+    addMessage(newMessage);
     // setMessages([...messages, newMessage]);
     setInputValue('');
     setSelectedFile(null);
@@ -88,16 +102,16 @@ const CustomerServiceChat = () => {
       {/* --- Chat Messages --- */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
         {messages.map((msg) => (
-          <div key={msg._id} className={`flex ${msg?.sender_id?._id == authStore?.user?._id ? 'justify-end' : 'justify-start'}`}>
-            <div className={`flex gap-3 max-w-[80%] ${msg?.sender_id?._id == authStore?.user?._id ? 'flex-row-reverse' : 'flex-row'}`}>
+          <div key={msg?.id} className={`flex ${msg?.sender_id == authStore.user?._id ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex gap-3 max-w-[80%] ${msg?.sender_id == authStore.user?._id ? 'flex-row-reverse' : 'flex-row'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 
-                ${msg?.sender_id?._id == authStore?.user?._id ? 'bg-[var(--cyan)] text-black' : 'bg-gray-700 text-white'}`}>
-                {msg?.sender_id?._id == authStore?.user?._id ? <User size={16} /> : <Headset size={16} />}
+                ${msg?.sender_id == authStore.user?._id ? 'bg-[var(--cyan)] text-black' : 'bg-gray-700 text-white'}`}>
+                {msg?.sender_id == authStore.user?._id ? <User size={16} /> : <Headset size={16} />}
               </div>
               
               <div className="flex flex-col gap-1">
                 <div className={`p-3 rounded-2xl text-sm ${
-                  msg?.sender_id?._id == authStore?.user?._id 
+                  msg?.sender_id == authStore.user?._id 
                     ? 'bg-[var(--cyan)] text-black rounded-tr-none' 
                     : 'bg-[var(--primary-bg)] text-[var(--text)] rounded-tl-none border border-gray-800'
                 }`}>
@@ -107,10 +121,10 @@ const CustomerServiceChat = () => {
                       <span className="text-xs font-medium truncate max-w-[150px]">{msg.fileName}</span>
                     </div>
                   )} */}
-                  {msg?.message }
+                  {msg?.text && <p>{msg.text}</p>}
                 </div>
-                <p className={`text-[10px] text-[var(--text)] opacity-50 ${msg?.sender_id?._id == authStore?.user?._id ? 'text-right' : 'text-left'}`}>
-                  {formatChatTime(msg.createdAt)}
+                <p className={`text-[10px] text-[var(--text)] opacity-50 ${msg?.sender_id == authStore.user?._id ? 'text-right' : 'text-left'}`}>
+                  {formatChatTime(msg.timestamp)}
                 </p>
               </div>
             </div>
