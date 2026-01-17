@@ -1,4 +1,10 @@
-import type { IMessage } from "../store/message";
+import type { ChatMessage, IMessage } from "../store/message";
+import { v4 as uuidv4 } from "uuid";
+
+export function generateUniqueId(): string {
+  return `${Date.now()}-${uuidv4()}`;
+}
+
 
 export function formatChatTime(isoDate: string): string {
   const date = new Date(isoDate);
@@ -44,12 +50,13 @@ export function formatChatTime(isoDate: string): string {
   return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
 }
 
-export const formatApiResponseMessage = (messages:IMessage[]) => {
+export const formatApiResponseMessage = (messages:IMessage[])  : ChatMessage[] => {
  return messages.map((item ) => ({
         id:item?._id,
         text:item?.message,
         fileName:item?.file?.publicID || null,
         sender_id:item?.sender_id?._id ,
-        timestamp:item?.createdAt
+        timestamp:item?.createdAt,
+        status:"sending"
       }))
 }

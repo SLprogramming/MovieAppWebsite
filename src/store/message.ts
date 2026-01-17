@@ -8,7 +8,7 @@ export interface IUser {
   role: "user" | "admin" | "superAdmin";
 }
 
-export type ConversationStatus = "pending" | "progress" | "closed";
+export type ConversationStatus = "pending" | "progress" | "finish";
 
 export interface IConversation {
   _id: string;
@@ -48,6 +48,7 @@ export type ChatMessage = {
   fileName: string | null;
   sender_id:string; // extend if needed
   timestamp: string;
+  status:MessageStatus
 };
 
 
@@ -58,6 +59,7 @@ type MessageStoreState = {
   fetchConversation: (userId:string) => Promise<void>;
   fetchMessages: (conversationId: string) => Promise<void>;
   addMessage: (message: ChatMessage) => void;
+  updateMessage:(message: IMessage) => void;
   addConversation: (conversation: IConversation) => void;
 };
 
@@ -67,8 +69,8 @@ export const useMessageStore = create<MessageStoreState>()((set) => ({
     fetchConversation: async (userId:string) => {
       try {
         const response = await socketApi.get(`/conversations/get-by-user/${userId}`);
-        console.log(response.data?.conversations.filter((conv: IConversation) => conv.status == "progress") )
-        set({ conversations: response.data?.conversations.filter((conv: IConversation) => conv.status == "progress") });
+       
+        set({ conversations: response.data?.conversations.filter((conv: IConversation) => conv.status !== "finish") });
       } catch (error) {
         console.error("Failed to fetch conversations:", error);
       }
@@ -84,10 +86,20 @@ export const useMessageStore = create<MessageStoreState>()((set) => ({
       }
     },
     addMessage: (message: ChatMessage) => {
-      ;
+      console.log('hello')
       set((state) => ({
         messages: [...state.messages, message],
       }));
+    },
+    updateMessage:(message:IMessage) =>{
+      set(state => {
+        let updatedMessages = state.messages.map(msg => {
+         return msg.id === message?.client_id ?  formatApiResponseMessage([message])[0] : msg
+         
+          
+        })
+        return ({messages:updatedMessages})
+      })
     },
     addConversation: (conversation: IConversation) => {
       set({conversations:[conversation]});

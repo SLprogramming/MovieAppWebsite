@@ -3,12 +3,12 @@ import { Send, User, Headset, Paperclip, Smile, MoreVertical, X, FileText } from
 import { messageSocket } from '../socket';
 import { useAuthStore } from '../store/user';
 import { useMessageStore , type ChatMessage}   from '../store/message';
-import { formatChatTime } from '../tools/helper';
+import { formatApiResponseMessage, formatChatTime, generateUniqueId } from '../tools/helper';
 
 
 
 const CustomerServiceChat = () => {
-  const {messages,conversations,fetchConversation,addMessage,fetchMessages} = useMessageStore()
+  const {messages,conversations,fetchConversation,addMessage,fetchMessages,updateMessage,addConversation} = useMessageStore()
 
   const [inputValue, setInputValue] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -22,22 +22,34 @@ const CustomerServiceChat = () => {
 
   messageSocket.on('message:new',(data:any) => {
     console.log("New message received:",data)
-    
+    let newMessage = formatApiResponseMessage([data])[0]
+    addMessage(newMessage)
   })
   messageSocket.on("conversation:new",(data:any) => {
     console.log("New conversation started:",data)
-    // setMessages([])
+   addConversation(data)
+  });
+  messageSocket.on("message:saved",(data:any) => {
+    console.log("message saved:",data)
+    updateMessage(data)
+   
   });
     fetchConversation(authStore.user?._id || '')
    
+    return () =>{
+      messageSocket.off("message:new")
+      messageSocket.off("message:saved")
+      messageSocket.off("conversation:new")
+    }
  }, []);
 
  useEffect(() => {
-  
+
      if(conversations.length > 0){
+      console.log('hello')
      fetchMessages(conversations[0]?._id)
   }
-  },[conversations]);
+  },[conversations.length]);
 
 
 
@@ -61,13 +73,15 @@ const CustomerServiceChat = () => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() && !selectedFile) return;
-    messageSocket.emit('message:new',{sender_id:authStore.user?._id, message:inputValue ,conversation_id:conversations[0]?._id})
-    const newMessage = {
-      id:null,
+    const client_id = generateUniqueId()
+    messageSocket.emit('message:new',{sender_id:authStore.user?._id, message:inputValue ,conversation_id:conversations[0]?._id , client_id})
+    const newMessage :ChatMessage= {
+      id:client_id,
       text: inputValue ,
       fileName: selectedFile?.name || null,
       sender_id: authStore.user?._id || '',
       timestamp: new Date().toISOString(),
+      status:"sending"
     };
     addMessage(newMessage);
     // setMessages([...messages, newMessage]);
@@ -122,6 +136,7 @@ const CustomerServiceChat = () => {
                     </div>
                   )} */}
                   {msg?.text && <p>{msg.text}</p>}
+                 
                 </div>
                 <p className={`text-[10px] text-[var(--text)] opacity-50 ${msg?.sender_id == authStore.user?._id ? 'text-right' : 'text-left'}`}>
                   {formatChatTime(msg.timestamp)}
