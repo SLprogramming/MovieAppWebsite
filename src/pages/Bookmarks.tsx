@@ -62,7 +62,7 @@ if(isLoading){
         {contentType}
       </h1>
       <div className="w-full grid grid-cols-3 sm:grid-cols-4 md:flex flex-wrap overflow-y-scroll gap-4 lg:gap-6 scrollbar-hide pt-3 px-2">
-        {[...contents].reverse().map((e, index) => (
+        {[...contents].reverse().filter(Boolean).map((e, index) => (
           <MovieCard
             needConfirm={contentType == 'recent'}
             key={`${e.id}-${index}`}

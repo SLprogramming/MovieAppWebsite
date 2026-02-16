@@ -64,6 +64,28 @@ Key client responsibilities:
 
 ---
 
+## Customer Service (Live Chat)
+
+This project includes a realtime customer support chat implemented as a single-page component and backed by the socket instance and message store:
+
+- UI & component: [src/pages/CustomerService.tsx](src/pages/CustomerService.tsx) (component: `CustomerServiceChat`).
+- Socket instance: [`messageSocket`](src/socket.tsx) handles events (`message:new`, `conversation:new`, `message:saved`) and emits new messages.
+- Message store: [`useMessageStore`](src/store/message.ts) manages conversations, messages and exposes actions like `fetchConversation`, `fetchMessages`, `addMessage`, `updateMessage`, and `addConversation`.
+- Helpers: [`formatApiResponseMessage`](src/tools/helper.ts), [`formatChatTime`](src/tools/helper.ts), and [`generateUniqueId`](src/tools/helper.ts) are used for formatting and optimistic-client ids.
+- Auth context: [`useAuthStore`](src/store/user.ts) is used to identify the current user when sending messages.
+
+Implementation notes:
+- The chat UI is optimistic: outgoing messages are added locally with a `status: "sending"` and reconciled when the server emits `message:saved`.
+- Files are supported via a hidden file input and preview bubble before sending.
+- The component auto-scrolls on new messages and subscribes/unsubscribes to socket events on mount/unmount.
+
+See:
+- [src/pages/CustomerService.tsx](src/pages/CustomerService.tsx)
+- [`messageSocket`](src/socket.tsx)
+- [`useMessageStore`](src/store/message.ts)
+- [`formatApiResponseMessage`](src/tools/helper.ts), [`formatChatTime`](src/tools/helper.ts), [`generateUniqueId`](src/tools/helper.ts)
+- [`useAuthStore`](src/store/user.ts)
+
 ## Developer notes
 
 - To simulate a purchase approval / premium update: trigger the backend-side socket event or use the backend admin flow (client listens to `purchaseRequest:new` and `overAll:change`).
