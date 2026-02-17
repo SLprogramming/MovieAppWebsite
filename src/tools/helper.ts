@@ -57,6 +57,6 @@ export const formatApiResponseMessage = (messages:IMessage[])  : ChatMessage[] =
         fileName:item?.file?.publicID || null,
         sender_id:item?.sender_id?._id ,
         timestamp:item?.createdAt,
-        status:"sending"
+        status:item?.status || "sending"
       }))
 }

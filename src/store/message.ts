@@ -60,6 +60,7 @@ type MessageStoreState = {
   fetchMessages: (conversationId: string) => Promise<void>;
   addMessage: (message: ChatMessage) => void;
   updateMessage:(message: IMessage) => void;
+  updateMessageWithID:(message: IMessage) => void;
   addConversation: (conversation: IConversation) => void;
 };
 
@@ -95,6 +96,16 @@ export const useMessageStore = create<MessageStoreState>()((set) => ({
       set(state => {
         let updatedMessages = state.messages.map(msg => {
          return msg.id === message?.client_id ?  formatApiResponseMessage([message])[0] : msg
+         
+          
+        })
+        return ({messages:updatedMessages})
+      })
+    },
+     updateMessageWithID:(message:IMessage) =>{
+      set(state => {
+        let updatedMessages = state.messages.map(msg => {
+         return msg.id === message?._id ?  formatApiResponseMessage([message])[0] : msg
          
           
         })
