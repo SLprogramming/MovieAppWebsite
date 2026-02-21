@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, test } from "vitest";
+import { describe,  expect, beforeEach, vi, test } from "vitest";
 import { useAuthStore } from "./user";
 
 vi.mock("../axios", () => {

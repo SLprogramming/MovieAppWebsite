@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useRef,
   type ChangeEvent,
-  useMemo,
 } from "react";
 import {
   Send,
